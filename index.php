@@ -31,9 +31,8 @@ if (!isset($_SESSION['access_token']) && isset($_GET["code"]) && !isset($_SESSIO
         $_SESSION['user_image'] = $user->getAvatar() ?? '';
 
         // Clean URL
-        echo "<script>
-                history.replaceState({}, '', '" . strtok($_SERVER['REQUEST_URI'], '?') . "');
-              </script>";
+        header('Location: ' . strtok($_SERVER['REQUEST_URI'], '?'));
+		exit;
     }
 }
 
