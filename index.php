@@ -657,6 +657,77 @@ var global_item_detail = [];
 var letterNumber = /^[0-9a-zA-Z.,':-\s\&()\+%]+$/;
 var valid_url = /^(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
 
+function renderTableHeader(itemId, itemName, unit, sort, dir, variant) {
+    // Calculate directions for each column
+    const shopDir = sort === "shop" ? (dir === "asc" ? "desc" : "asc") : "asc";
+    const variantDir = sort === "variant" ? (dir === "asc" ? "desc" : "asc") : "asc";
+    const priceDir = sort === "price_per_unit" ? (dir === "asc" ? "desc" : "asc") : "asc";
+
+    return `
+        <table border="1">
+            <tr>
+                <th>
+                    <a href='javascript:void(0)' onclick='item_select_item(${itemId}, "shop", "${shopDir}", ${variant})'>${itemName}</a>
+                </th>
+                <th>
+                    <a href='javascript:void(0)' onclick='item_select_item(${itemId}, "variant", "${variantDir}", ${variant})'>Variant</a>
+                </th>
+                <th>Price</th>
+                <th>
+                    <a href='javascript:void(0)' onclick='item_select_item(${itemId}, "price_per_unit", "${priceDir}", ${variant})'>Price per ${unit}</a>
+                </th>
+                <th>Date</th>
+                <th></th>
+            </tr>
+    `;
+}
+
+function renderItemRow(item, index, sort, dir, variant) {
+    const now = new Date();
+    const then = new Date(item.last_update);
+    const diffInDays = Math.round((then - now) / (1000*60*60*24));
+
+    let shop = item.shop;
+    if (item.url !== "") {
+        shop = `<a href="${item.url}" target="_blank">${shop}</a>`;
+    }
+
+    const price = diffInDays < -365 ?
+        `<s><span style='color:grey;'>${Number(item.price).toFixed(2)}</span></s>` :
+        Number(item.price).toFixed(2);
+
+    const pricePerUnit = diffInDays < -365 ?
+        `<s><span style='color:grey;'>${Number(item.price_per_unit).toFixed(2)}</span></s>` :
+        Number(item.price_per_unit).toFixed(2);
+
+    const lastUpdate = diffInDays < -365 ?
+        `<span style='color:grey;'>${item.last_update}</span>` :
+        item.last_update;
+
+    return `
+        <tr>
+            <td>${shop}</td>
+            <td>${item.variant}</td>
+            <td>${price}</td>
+            <td>${pricePerUnit}</td>
+            <td>${lastUpdate}</td>
+            <td>
+                <input type="button" id="modifyPriceButton" value="Modify" onclick="item_modify_price(${index}, '${sort}', '${dir}', ${variant})" />
+            </td>
+        </tr>
+    `;
+}
+
+function renderTableFooter(itemId) {
+    return `
+        </table>
+        <br /><br />
+        <input type="button" id="addShopButton" value="Add Shop" onclick="item_add_shop(${itemId})" />
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="button" id="addVariantButton" value="Add Variant" onclick="item_add_variant(${itemId})" />
+    `;
+}
+
 var App = {};
 App.ajax = function (options) {
     $("#spinner").show();
@@ -805,100 +876,15 @@ function item_select_item(value, sort, dir, variant) {
 				$("#alertModalTitle").html('Error');
 				$("#alertModalText").html(data.error)
 			} else {
-				global_item_detail =  data.items;
-				var item_detail_from_ajax = '';
-				item_detail_from_ajax += "<table border=\"1\">";
-				item_detail_from_ajax += "<tr><th>";
-				
-				if (sort ==  "shop") {
-					if (dir == "asc") {
-						dir = "desc";
-					} else {
-						dir = "asc";
-					}
-				}
-					
-				item_detail_from_ajax += "<a href='javascript:void(0)' onclick='item_select_item(" + data.items[0].item_id + ", \"shop\", \"" + dir + "\"," + variant + ")'>" + data.items[0].item + "</a>";
-				item_detail_from_ajax += "</th><th>";
-				
-				if (sort ==  "variant") {
-					if (dir == "asc") {
-						dir = "desc";
-					} else {
-						dir = "asc";
-					}
-				}
-				
-				item_detail_from_ajax += "<a href='javascript:void(0)' onclick='item_select_item(" + data.items[0].item_id + ", \"variant\", \"" + dir + "\"," + variant + ")'>Variant</a>";
-				item_detail_from_ajax += "</th><th>";
-				
-				item_detail_from_ajax += "Price";
-				item_detail_from_ajax += "</th><th>";
-				
-				if (sort ==  "price_per_unit") {
-					if (dir == "asc") {
-						dir = "desc";
-					} else {
-						dir = "asc";
-					}
-				}
-				
-				item_detail_from_ajax += "<a href='javascript:void(0)' onclick='item_select_item(" + data.items[0].item_id + ", \"price_per_unit\", \"" + dir + "\"," + variant + ")'>Price per " + data.items[0].unit + "</a>";
-				item_detail_from_ajax += "</th><th>"
-				item_detail_from_ajax += "Date";
-				item_detail_from_ajax += "</th><th></th></tr>";
-				
-				for (var mm = 0; mm < data.items.length; mm++) {
-					var now = new Date();
-					
-					var then = new Date(data.items[mm].last_update);
-					
-					var diffInDays = Math.round((then - now) / (1000*60*60*24));
-					
-					var shop = data.items[mm].shop;
-					if (data.items[mm].url != "") {
-						shop = "<a href=\"" + data.items[mm].url + "\" target=\"_blank\">" + shop + "</a>";
-					}
-					item_detail_from_ajax += "<tr><td>";
-					item_detail_from_ajax += shop;
-					item_detail_from_ajax += "</td><td>";
-					item_detail_from_ajax += data.items[mm].variant;
-					item_detail_from_ajax += "</td><td>";
-					if (diffInDays < -365) {
-						item_detail_from_ajax += "<s><span style='color:grey;'>";
-					}
-					item_detail_from_ajax += parseFloat(data.items[mm].price).toFixed(2);
-					if (diffInDays < -365) {
-						item_detail_from_ajax += "</span></s>";
-					}
-					item_detail_from_ajax += "</td><td>";
-					if (diffInDays < -365) {
-						item_detail_from_ajax += "<s><span style='color:grey;'>";
-					}
-					item_detail_from_ajax += parseFloat(data.items[mm].price_per_unit).toFixed(2);
-					if (diffInDays < -365) {
-						item_detail_from_ajax += "</span></s>";
-					}
-					item_detail_from_ajax += "</td><td>";
-					
-					if (diffInDays < -365) {
-						item_detail_from_ajax += "<span style='color:grey;'>";
-					}
-					item_detail_from_ajax += data.items[mm].last_update;
-					if (diffInDays < -365) {
-						item_detail_from_ajax += "</span>";
-					}
-					item_detail_from_ajax += "</td><td>";
-					item_detail_from_ajax += "<input type=\"button\" id=\"modifyPriceButton\" value=\"Modify\" onclick=\"item_modify_price(" + mm + ", '" + sort + "', '" + dir + "'," + variant + ")\" />";
-					item_detail_from_ajax += "</td></tr>";
-				}
-				item_detail_from_ajax += "</table>";
-				item_detail_from_ajax += "<br /><br />";
-				item_detail_from_ajax += "<input type=\"button\" id=\"addShopButton\" value=\"Add Shop\" onclick=\"item_add_shop(" +  data.items[0].item_id + ")\" />"
-				item_detail_from_ajax += "&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"button\" id=\"addVariantButton\" value=\"Add Variant\" onclick=\"item_add_variant(" +  data.items[0].item_id + ")\" />"
-				
+				global_item_detail = data.items;
+				const itemId = data.items[0].item_id;
+				const itemName = data.items[0].item;
+				const unit = data.items[0].unit;
+				let html = renderTableHeader(itemId, itemName, unit, sort, dir, variant);
+				html += data.items.map((item, index) => renderItemRow(item, index, sort, dir, variant)).join('');
+				html += renderTableFooter(itemId);
+				$("#item_detail_content").html(html);
 				$("#item_detail").show();
-				$("#item_detail_content").html(item_detail_from_ajax);
 			}
 		}
 	});
@@ -1268,14 +1254,14 @@ function item_add_variant_save() {
 		$('#itemAddVariantModalVariant').focus();
 		return;
 	}
-	
-	/*if (!variant.match(letterNumber)) {
+
+	if (!variant.match(letterNumber)) {
 		$("#itemAddVariantModalVariantErrorTr").show();
-		$("#itemAddVariantModalVariantError").html("Only Latin characters, numbers and some common symbols are accepted for Variant. Use Feedback for any suggestion."); 
+		$("#itemAddVariantModalVariantError").html("Only Latin characters, numbers and some common symbols are accepted for Variant. Use Feedback for any suggestion.");
 		$("#itemAddVariantModalVariant").focus();
 		$("#itemAddVariantModalVariant").select();
 		return;
-	}*/
+	}
 	
 	var total_unit = $('#itemAddVariantModalTotalUnit').val();
 	
@@ -1361,14 +1347,14 @@ function add_item_save() {
 		$("#add_item_name").focus();
 		return;
 	}
-	
-	// if (!name.match(letterNumber)) {
-		// $("#add_item_name_error_tr").show();
-		// $("#add_item_name_error").html("Only Latin characters, numbers and some common symbols are accepted for Item Name. Use Feedback for any suggestion."); 
-		// $("#add_item_name").focus();
-		// $("#add_item_name").select();
-		// return;
-	// }
+
+	if (!name.match(letterNumber)) {
+		$("#add_item_name_error_tr").show();
+		$("#add_item_name_error").html("Only Latin characters, numbers and some common symbols are accepted for Item Name. Use Feedback for any suggestion.");
+		$("#add_item_name").focus();
+		$("#add_item_name").select();
+		return;
+	}
 	
 	var variant = $("#add_item_variant").val();
 
@@ -1378,14 +1364,14 @@ function add_item_save() {
 		$("#add_item_variant").focus();
 		return;
 	}
-	
-	// if (!variant.match(letterNumber)) {
-		// $("#add_item_variant_error_tr").show();
-		// $("#add_item_variant_error").html("Only Latin characters, numbers and some common symbols are accepted for Variant. Use Feedback for any suggestion."); 
-		// $("#add_item_variant").focus();
-		// $("#add_item_variant").select();
-		// return;
-	// }
+
+	if (!variant.match(letterNumber)) {
+		$("#add_item_variant_error_tr").show();
+		$("#add_item_variant_error").html("Only Latin characters, numbers and some common symbols are accepted for Variant. Use Feedback for any suggestion.");
+		$("#add_item_variant").focus();
+		$("#add_item_variant").select();
+		return;
+	}
 	
 	var unit = $("#add_item_unit").val();
 	
@@ -1511,14 +1497,14 @@ function add_shop_save() {
 		$("#add_shop_name").focus();
 		return;
 	}
-	
-	// if (!shop_name.match(letterNumber)) {
-		// $("#add_shop_name_error_tr").show();
-		// $("#add_shop_name_error").html("Only Latin characters, numbers and some common symbols are accepted for Shop Name. Use Feedback for any suggestion."); 
-		// $("#add_shop_name").focus();
-		// $("#add_shop_name").select();
-		// return;
-	// }
+
+	if (!shop_name.match(letterNumber)) {
+		$("#add_shop_name_error_tr").show();
+		$("#add_shop_name_error").html("Only Latin characters, numbers and some common symbols are accepted for Shop Name. Use Feedback for any suggestion.");
+		$("#add_shop_name").focus();
+		$("#add_shop_name").select();
+		return;
+	}
 	
 	var online = $("#add_shop_is_online").val();
 	
@@ -1592,14 +1578,14 @@ function add_unit_save() {
 		$("#add_unit_name").focus();
 		return;
 	}
-	
-	// if (!unit_name.match(letterNumber)) {
-		// $("#add_unit_name_error_tr").show();
-		// $("#add_unit_name_error").html("Only Latin characters, numbers and some common symbols are accepted for Unit. Use Feedback for any suggestion."); 
-		// $("#add_unit_name").focus();
-		// $("#add_unit_name").select();
-		// return;
-	// }
+
+	if (!unit_name.match(letterNumber)) {
+		$("#add_unit_name_error_tr").show();
+		$("#add_unit_name_error").html("Only Latin characters, numbers and some common symbols are accepted for Unit. Use Feedback for any suggestion.");
+		$("#add_unit_name").focus();
+		$("#add_unit_name").select();
+		return;
+	}
 	
 	var data = {
 		name: unit_name,
