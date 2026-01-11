@@ -5,46 +5,62 @@ require_once '../../config/config_price.php';
 
 $login_button = '';
 
-if (!isset($_SESSION['access_token']) && isset($_GET["code"]) && !isset($_SESSION['oauth_code'])) {
+if (!isset($_SESSION['access_token']) && isset($_GET["code"])) {
 
-    // Store the code to prevent re-processing
-    $_SESSION['oauth_code'] = $_GET["code"];
+    // Verify state parameter for CSRF protection
+    if (!isset($_GET['state']) || !isset($_SESSION['oauth_state']) || $_GET['state'] !== $_SESSION['oauth_state']) {
+        // Invalid state - potential CSRF attack
+        header('Location: index.php?error=invalid_state');
+        exit();
+    }
+
+    // Clear the stored state
+    unset($_SESSION['oauth_state']);
 
     // Exchange code → token
     $token = $google_provider->getAccessToken('authorization_code', ['code' => $_GET['code']]);
 
     if (!$token->getToken()) {
-        // Handle error - remove stored code
-        unset($_SESSION['oauth_code']);
-    } else {
-        // Store tokens
-        $_SESSION['access_token'] = $token->getToken();
-        $_SESSION['refresh_token'] = $token->getRefreshToken();
-        $_SESSION['token_expires'] = $token->getExpires();
-
-        // Get user profile
-        $user = $google_provider->getResourceOwner($token);
-
-        $_SESSION['user_first_name'] = $user->getFirstName() ?? '';
-        $_SESSION['user_last_name'] = $user->getLastName() ?? '';
-        $_SESSION['user_email_address'] = $user->getEmail() ?? '';
-        $_SESSION['user_image'] = $user->getAvatar() ?? '';
-
-        // Clean URL
-        echo "<script>
-                history.replaceState({}, '', '" . strtok($_SERVER['REQUEST_URI'], '?') . "');
-              </script>";
+        // Token exchange failed
+        header('Location: index.php?error=token_exchange_failed');
+        exit();
     }
+
+    // Store tokens securely
+    $_SESSION['access_token'] = $token->getToken();
+    $_SESSION['refresh_token'] = $token->getRefreshToken();
+    $_SESSION['token_expires'] = $token->getExpires();
+
+    // Get and validate user profile
+    $user = $google_provider->getResourceOwner($token);
+
+    if (!$user->getEmail()) {
+        // Invalid user data
+        session_destroy();
+        header('Location: index.php?error=invalid_user');
+        exit();
+    }
+
+    $_SESSION['user_first_name'] = $user->getFirstName() ?? '';
+    $_SESSION['user_last_name'] = $user->getLastName() ?? '';
+    $_SESSION['user_email_address'] = $user->getEmail();
+    $_SESSION['user_image'] = $user->getAvatar() ?? '';
+
+    // Server-side redirect to clean URL (more secure than JS)
+    header('Location: ' . strtok($_SERVER['REQUEST_URI'], '?'));
+    exit();
 }
 
-
-
-//This is for check user has login into system by using Google account, if User not login into system then it will execute if block of code and make code for display Login link for Login using Google account.
-
+// Check for login button generation
 if (!isset($_SESSION['access_token']))
 {
-    //Create a URL to obtain user authorization
-    $login_button = '<a href="' . $google_provider->getAuthorizationUrl() . '"><img src="img/sign-in-with-google.png" /></a>';
+    // Generate secure state parameter for CSRF protection
+    $state = bin2hex(random_bytes(16));
+    $_SESSION['oauth_state'] = $state;
+
+    // Create OAuth URL with state parameter
+    $authUrl = $google_provider->getAuthorizationUrl(['state' => $state]);
+    $login_button = '<a href="' . htmlspecialchars($authUrl) . '"><img src="img/sign-in-with-google.png" alt="Sign in with Google" /></a>';
 }
 
 ?>
