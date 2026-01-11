@@ -660,6 +660,15 @@ var global_item_detail = [];
 var letterNumber = /^[0-9a-zA-Z.,':-\s\&()\+%]+$/;
 var valid_url = /^(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
 
+function requireValue(value, errorEl, msg, focusEl) {
+    if (!value) {
+        errorEl.show().html(msg);
+        focusEl.focus();
+        return false;
+    }
+    return true;
+}
+
 function renderTableHeader(itemId, itemName, unit, sort, dir, variant) {
     // Calculate directions for each column
     const shopDir = sort === "shop" ? (dir === "asc" ? "desc" : "asc") : "asc";
@@ -946,16 +955,16 @@ function item_save_modify_price() {
 	$('#modifyPriceModalURLErrorTr').hide();
 	
 	var price = $("#modifyPriceModalPrice").val();
-	
-	if (price == "") {
-		$("#modifyPriceModalPriceErrorTr").show();
-		$("#modifyPriceModalPriceError").html("Price is required.");
-		$("#modifyPriceModalPrice").focus();
-		$("#modifyPriceModalPrice").select();
-		return;
+
+	if (!requireValue(price, $("#modifyPriceModalPriceErrorTr"), "Price is required.", $("#modifyPriceModalPrice"))) {
+
+	    $("#modifyPriceModalPrice").select();
+
+	    return;
+
 	}
 	
-	var price = parseFloat(price);
+	price = parseFloat(price);
 
 	if (isNaN(price)) {
 		$("#modifyPriceModalPriceErrorTr").show();
@@ -979,12 +988,7 @@ function item_save_modify_price() {
 	
 	if (url_required == "1") {
 		var url = $("#modifyPriceModalURL").val();
-		if (url == "") {
-			$('#modifyPriceModalURLErrorTr').show();
-			$("#modifyPriceModalURLError").html("URL is required");
-			$("#modifyPriceModalURL").focus();
-			return;
-		}
+		if (!requireValue(url, $('#modifyPriceModalURLErrorTr'), "URL is required", $("#modifyPriceModalURL"))) return;
 		if (valid_url.test(url)) {
 			// do nothing
 		} else {
@@ -1153,17 +1157,21 @@ function item_add_shop_save() {
 			continue;
 		}
 		if (global_shops[j].id == shop) {
-			if (global_shops[j].url == "1") {
-				var url = $("#itemAddShopModalURL").val();
-				if (valid_url.test(url)) {
-					// do nothing
-				} else {
-					$("#itemAddShopModalURLErrorTr").show();
-					$("#itemAddShopModalURLError").html("Invalid URL.");
-					$("#itemAddShopModalURL").focus();
-					$("#itemAddShopModalURL").select();
-					return;
-				}
+		if (global_shops[j].url == "1") {
+			var url = $("#itemAddShopModalURL").val();
+			if (!requireValue(url, $("#itemAddShopModalURLErrorTr"), "URL is required.", $("#itemAddShopModalURL"))) {
+				$("#itemAddShopModalURL").select();
+				return;
+			}
+			if (valid_url.test(url)) {
+				// do nothing
+			} else {
+				$("#itemAddShopModalURLErrorTr").show();
+				$("#itemAddShopModalURLError").html("Invalid URL.");
+				$("#itemAddShopModalURL").focus();
+				$("#itemAddShopModalURL").select();
+				return;
+			}
 			} else {
 				var url = "";
 			}
@@ -1175,7 +1183,7 @@ function item_add_shop_save() {
 	
 	var price = $("#itemAddShopModalPrice").val();
 	
-	var price = parseFloat(price);
+	price = parseFloat(price);
 
 	if (isNaN(price)) {
 		$("#itemAddShopModalPriceErrorTr").show();
@@ -1270,13 +1278,8 @@ function item_add_variant_save() {
 	$('#itemAddVariantModalError').hide();
 	
 	var variant = $('#itemAddVariantModalVariant').val();
-	
-	if (variant == "") {
-		$('#itemAddVariantModalVariantErrorTr').show();
-		$('#itemAddVariantModalVariantError').html('Variant is required.');
-		$('#itemAddVariantModalVariant').focus();
-		return;
-	}
+
+	if (!requireValue(variant, $('#itemAddVariantModalVariantErrorTr'), 'Variant is required.', $('#itemAddVariantModalVariant'))) return;
 
 	if (!variant.match(letterNumber)) {
 		$("#itemAddVariantModalVariantErrorTr").show();
@@ -1363,13 +1366,8 @@ function add_item_save() {
 	$("#add_item_price_error_tr").hide();
 	
 	var name = $("#add_item_name").val();
-	
-	if (name == "") {
-		$("#add_item_name_error_tr").show();
-		$("#add_item_name_error").html("Item name is required.");
-		$("#add_item_name").focus();
-		return;
-	}
+
+	if (!requireValue(name, $("#add_item_name_error_tr"), "Item name is required.", $("#add_item_name"))) return;
 
 	if (!name.match(letterNumber)) {
 		$("#add_item_name_error_tr").show();
@@ -1381,12 +1379,7 @@ function add_item_save() {
 	
 	var variant = $("#add_item_variant").val();
 
-	if (variant == "") {
-		$("#add_item_variant_error_tr").show();
-		$("#add_item_variant_error").html("Variant is required.");
-		$("#add_item_variant").focus();
-		return;
-	}
+	if (!requireValue(variant, $("#add_item_variant_error_tr"), "Variant is required.", $("#add_item_variant"))) return;
 
 	if (!variant.match(letterNumber)) {
 		$("#add_item_variant_error_tr").show();
@@ -1422,12 +1415,7 @@ function add_item_save() {
 	
 	if (global_shops[shop].url == "1") {
 		var url = $("#add_item_url").val();
-		if (url == "") {
-			$("#add_item_url_error_tr").show();
-			$("#add_item_url_error").html("URL required.");
-			$("#add_item_url").focus();
-			return;
-		}
+		if (!requireValue(url, $("#add_item_url_error_tr"), "URL required.", $("#add_item_url"))) return;
 		
 		if (valid_url.test(url)) {
 			// do nothing
@@ -1444,7 +1432,7 @@ function add_item_save() {
 	
 	var price = $("#add_item_price").val();
 
-	var price = parseFloat(price);
+	price = parseFloat(price);
 
 	if (isNaN(price)) {
 		$("#add_item_price_error_tr").show();
@@ -1513,13 +1501,8 @@ function add_shop_save() {
 	$("#add_shop_url_error_tr").hide();
 	
 	var shop_name = $("#add_shop_name").val();
-	
-	if (shop_name == "") {
-		$("#add_shop_name_error_tr").show();
-		$("#add_shop_name_error").html("Shop Name is required.");
-		$("#add_shop_name").focus();
-		return;
-	}
+
+	if (!requireValue(shop_name, $("#add_shop_name_error_tr"), "Shop Name is required.", $("#add_shop_name"))) return;
 
 	if (!shop_name.match(letterNumber)) {
 		$("#add_shop_name_error_tr").show();
@@ -1533,13 +1516,8 @@ function add_shop_save() {
 	
 	if ((online == 2) && !contributor.includes(email)) {
 		var url = $("#add_shop_url").val();
-		
-		if (url == "") {
-			$("#add_shop_url_error_tr").show();
-			$("#add_shop_url_error").html("URL required.");
-			$("add_shop_url").focus();
-			return;
-		}
+
+		if (!requireValue(url, $("#add_shop_url_error_tr"), "URL required.", $("#add_shop_url"))) return;
 		
 		if (valid_url.test(url)) {
 			// do nothing
@@ -1594,13 +1572,8 @@ function add_unit_save() {
 	$("#add_unit_name_error_tr").hide();
 	
 	var unit_name = $("#add_unit_name").val();
-	
-	if (unit_name == "") {
-		$("#add_unit_name_error_tr").show();
-		$("#add_unit_name_error").html("Unit is required.");
-		$("#add_unit_name").focus();
-		return;
-	}
+
+	if (!requireValue(unit_name, $("#add_unit_name_error_tr"), "Unit is required.", $("#add_unit_name"))) return;
 
 	if (!unit_name.match(letterNumber)) {
 		$("#add_unit_name_error_tr").show();
@@ -1648,22 +1621,12 @@ function contact_send() {
 	$("#contact_subject_error_tr").hide();
 	$("#contact_message_error_tr").hide();
 	var subject = $("#contact_subject").val();
-	
-	if (subject == "") {
-		$("#contact_subject_error_tr").show();
-		$("#contact_subject_error").html("Subject is required");
-		$("#contact_subject").focus();
-		return;
-	}
+
+	if (!requireValue(subject, $("#contact_subject_error_tr"), "Subject is required", $("#contact_subject"))) return;
 
 	var message = $("#contact_message").val();
-	
-	if (message == "") {
-		$("#contact_message_error_tr").show();
-		$("#contact_message_error").html("Message is required");
-		$("#contact_message").focus();
-		return;
-	}
+
+	if (!requireValue(message, $("#contact_message_error_tr"), "Message is required", $("#contact_message"))) return;
 	
 	var data = {
 		subject: subject,
