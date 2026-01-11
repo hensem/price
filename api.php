@@ -281,7 +281,7 @@ switch ($url_param) {
 
             disconnect_db($conn);
             header('Content-Type: application/json');
-            echo json_encode(['success' => true, 'msg' => "Thank you. Press F5 to refresh."]);
+            echo json_encode(['success' => true, 'msg' => "Thank you."]);
         }
         break;
 
@@ -405,7 +405,7 @@ switch ($url_param) {
             $r = mailer("hensem@gmail.com", "mamat hensem", "Price || Add Item Shop", $body);
 
             header('Content-Type: application/json');
-            echo json_encode(['success' => true, 'msg' => "Thank you. Press F5 to refresh."]);
+            echo json_encode(['success' => true, 'msg' => "Thank you."]);
         }
 
         disconnect_db($conn);
@@ -489,7 +489,7 @@ switch ($url_param) {
             $r = mailer("hensem@gmail.com", "mamat hensem", "Price || Add Item Variant", $body);
 
             header('Content-Type: application/json');
-            echo json_encode(['success' => true, 'msg' => "Thank you. Press F5 to refresh."]);
+            echo json_encode(['success' => true, 'msg' => "Thank you."]);
         }
 
         disconnect_db($conn);
@@ -594,7 +594,7 @@ switch ($url_param) {
             $r = mailer("hensem@gmail.com", "mamat hensem", "Price || Add New Item", $body);
 
             header('Content-Type: application/json');
-            echo json_encode(['success' => true, 'msg' => "Thank you. Press F5 to refresh."]);
+            echo json_encode(['success' => true, 'msg' => "Thank you."]);
         }
 
         disconnect_db($conn);
@@ -685,7 +685,7 @@ switch ($url_param) {
             $r = mailer("hensem@gmail.com", "mamat hensem", "Price || Add Shop", $body);
 
             header('Content-Type: application/json');
-            echo json_encode(['success' => true, 'msg' => "Thank you. Press F5 to refresh."]);
+            echo json_encode(['success' => true, 'msg' => "Thank you."]);
         }
 
         disconnect_db($conn);
@@ -762,7 +762,7 @@ switch ($url_param) {
             $r = mailer("hensem@gmail.com", "mamat hensem", "Price || Add Unit", $body);
 
             header('Content-Type: application/json');
-            echo json_encode(['success' => true, 'msg' => "Thank you. Press F5 to refresh."]);
+            echo json_encode(['success' => true, 'msg' => "Thank you."]);
         }
 
         disconnect_db($conn);

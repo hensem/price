@@ -747,6 +747,26 @@ App.showError = function (msg) {
     $("#alertModalText").text(msg);
 };
 
+App.loadItems = function () {
+    App.ajax({
+        url: "api.php?url=/items",
+        dataType: "json",
+        success: function(data) {
+            if (data.success) {
+                items = data.items;
+                var select = document.getElementById("select-item");
+                // Clear existing options except the first one
+                select.innerHTML = '<option value="0">Select item....</option>';
+                for (var i = 0; i < items.length; i++) {
+                    var option = new Option(items[i].item_variant, items[i].id);
+                    select.add(option);
+                }
+                $('.selectpicker').selectpicker('refresh');
+            }
+        }
+    });
+};
+
 var contributor = [];
 <?php
 for ($i = 0; $i < count($contributor); $i++) {
@@ -1471,7 +1491,7 @@ function add_item_save() {
 				$("#add_item_shop").val("0").trigger('change');
 				$("#add_item_url").val("");
 				$("#add_item_price").val("");
-				location.reload();
+				App.loadItems();
 			}
 		}
 	});
