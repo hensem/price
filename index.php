@@ -17,6 +17,13 @@ if (!isLoggedIn() && isset($_GET["code"])) {
     // Clear the stored state
     unset($_SESSION['oauth_state']);
 
+    // Prevent OAuth code replay
+    if (isset($_SESSION['oauth_code_used'])) {
+        header('Location: index.php');
+        exit();
+    }
+    $_SESSION['oauth_code_used'] = true;
+
     // Exchange code → token
     $token = $google_provider->getAccessToken('authorization_code', ['code' => $_GET['code']]);
 
@@ -48,6 +55,9 @@ if (!isLoggedIn() && isset($_GET["code"])) {
     $_SESSION['user_last_name'] = $user->getLastName() ?? '';
     $_SESSION['user_email_address'] = $user->getEmail();
     $_SESSION['user_image'] = $user->getAvatar() ?? '';
+
+    // Clear the code used flag after successful authentication
+    unset($_SESSION['oauth_code_used']);
 
     // Server-side redirect to clean URL (more secure than JS)
     header('Location: ' . strtok($_SERVER['REQUEST_URI'], '?'));
