@@ -26,6 +26,9 @@ if (!isLoggedIn() && isset($_GET["code"])) {
         exit();
     }
 
+    // Regenerate session ID for security after successful OAuth
+    session_regenerate_id(true);
+
     // Store tokens securely
     $_SESSION['access_token'] = $token->getToken();
     $_SESSION['refresh_token'] = $token->getRefreshToken();
