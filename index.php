@@ -5,7 +5,7 @@ require_once '../../config/config_price.php';
 
 $login_button = '';
 
-if (!isset($_SESSION['access_token']) && isset($_GET["code"])) {
+if (!isLoggedIn() && isset($_GET["code"])) {
 
     // Verify state parameter for CSRF protection
     if (!isset($_GET['state']) || !isset($_SESSION['oauth_state']) || $_GET['state'] !== $_SESSION['oauth_state']) {
@@ -52,7 +52,7 @@ if (!isset($_SESSION['access_token']) && isset($_GET["code"])) {
 }
 
 // Check for login button generation
-if (!isset($_SESSION['access_token']))
+if (!isLoggedIn())
 {
     // Generate secure state parameter for CSRF protection
     $state = bin2hex(random_bytes(16));
