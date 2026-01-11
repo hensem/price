@@ -657,6 +657,25 @@ var global_item_detail = [];
 var letterNumber = /^[0-9a-zA-Z.,':-\s\&()\+%]+$/;
 var valid_url = /^(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
 
+var App = {};
+App.ajax = function (options) {
+    $("#spinner").show();
+
+    return $.ajax(options)
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            App.showError(textStatus + ": " + errorThrown);
+        })
+        .always(function () {
+            $("#spinner").hide();
+        });
+};
+
+App.showError = function (msg) {
+    $('#alertModal').modal({ backdrop: 'static', keyboard: false });
+    $("#alertModalTitle").text('Error');
+    $("#alertModalText").text(msg);
+};
+
 var contributor = [];
 <?php
 for ($i = 0; $i < count($contributor); $i++) {
@@ -669,7 +688,7 @@ for ($i = 0; $i < count($contributor); $i++) {
 var email = "<?php echo $_SESSION['user_email_address']; ?>";
 
 function loadInitialData() {
-	$.ajax({
+	App.ajax({
 		url: "api.php?url=/items",
 		dataType: "json",
 		success: function(data) {
@@ -685,7 +704,7 @@ function loadInitialData() {
 		}
 	});
 
-	$.ajax({
+	App.ajax({
 		url: "api.php?url=/units",
 		dataType: "json",
 		success: function(data) {
@@ -701,7 +720,7 @@ function loadInitialData() {
 		}
 	});
 
-	$.ajax({
+	App.ajax({
 		url: "api.php?url=/shops",
 		dataType: "json",
 		success: function(data) {
@@ -774,22 +793,9 @@ function item_select_item(value, sort, dir, variant) {
 		return;
 	}
 
-	$("#spinner").show();
-	
-	$.ajax({
+	App.ajax({
 		url: "api.php?url=/item&item_id=" + value + "&sort=" + sort + "&dir=" + dir + "&variant=" + variant,
 		dataType: "json",
-		complete: function(jqXHR, textStatus) {
-			$("#spinner").hide();
-		},
-		error: function(jqXHR, textStatus, errorThrown ) {
-			$('#alertModal').modal({
-				backdrop: 'static',
-				keyboard: false
-			});
-			$("#alertModalTitle").html('Error');
-			$("#alertModalText").html(textStatus + ": " + errorThrown);
-		},
 		success: function(data, textStatus, jqXHR ) {
 			if (!data.success) {
 				$('#alertModal').modal({
@@ -983,30 +989,19 @@ function item_save_modify_price() {
 		url = "";
 	}
 	
-	$("#spinner").show();
-	
 	var data = {
 		id: $('#modifyPriceModalID').val(),
 		url: url,
 		price: price,
 		email: email
 	}
-	$.ajax({
+	App.ajax({
 		url: "api.php?url=/item/modify_price",
 		method: "POST",
 		dataType: "json",
 		data: data,
 		complete: function(jqXHR, textStatus) {
-			$("#spinner").hide();
 			$('#modifyPriceModal').modal('hide');
-		},
-		error: function(jqXHR, textStatus, errorThrown ) {
-			$('#alertModal').modal({
-				backdrop: 'static',
-				keyboard: false
-			});
-			$("#alertModalTitle").html('Error');
-			$("#alertModalText").html(textStatus + ": " + errorThrown);
 		},
 		success: function(data, textStatus, jqXHR ) {
 			if (!data.success) {
@@ -1062,22 +1057,9 @@ function item_add_shop(item_id) {
 		}
 	}
 	
-	$("#spinner").show();
-	$.ajax({
+	App.ajax({
 		url: "api.php?url=/item/variant&item_id=" + item_id,
 		dataType: "json",
-		complete: function(jqXHR, textStatus) {
-			$("#spinner").hide();
-		},
-		error: function(jqXHR, textStatus, errorThrown ) {
-			$('#itemAddShopModal').modal('hide');
-			$('#alertModal').modal({
-				backdrop: 'static',
-				keyboard: false
-			});
-			$("#alertModalTitle").html('Error');
-			$("#alertModalText").html(textStatus + ": " + errorThrown);
-		},
 		success: function(data, textStatus, jqXHR ) {
 			if (!data.success) {
 				$('#alertModal').modal({
@@ -1202,25 +1184,12 @@ function item_add_shop_save() {
 		price: price,
 		email: email
 	};
-	
-	$("#spinner").show();
-	$.ajax({
+
+	App.ajax({
 		url: "api.php?url=/item/add_shop",
 		method: 'post',
 		dataType: "json",
 		data: data,
-		complete: function(jqXHR, textStatus) {
-			$("#spinner").hide();
-		},
-		error: function(jqXHR, textStatus, errorThrown ) {
-			$('#itemAddShopModal').modal('hide');
-			$('#alertModal').modal({
-				backdrop: 'static',
-				keyboard: false
-			});
-			$("#alertModalTitle").html('Error');
-			$("#alertModalText").html(textStatus + ": " + errorThrown);
-		},
 		success: function(data, textStatus, jqXHR ) {
 			if (!data.success) {
 				$('#itemAddShopModalError').show();
@@ -1233,9 +1202,9 @@ function item_add_shop_save() {
 				});
 				$("#alertModalTitle").html('Info submitted');
 				$("#alertModalText").html(data.msg)
-				
+
 				$('#itemAddShopModalShop').val("0");
-				$('#itemAddShopModalURL').val("");	
+				$('#itemAddShopModalURL').val("");
 				$('#itemAddShopModalPrice').val("");
 				$('#itemAddShopModalError').html("");
 				$('#itemAddShopModalError').hide();
@@ -1334,25 +1303,12 @@ function item_add_variant_save() {
 		unit: total_unit,
 		email: email
 	};
-	
-	$("#spinner").show();
-	$.ajax({
+
+	App.ajax({
 		url: "api.php?url=/item/add_variant",
 		method: 'post',
 		dataType: "json",
 		data: data,
-		complete: function(jqXHR, textStatus) {
-			$("#spinner").hide();
-		},
-		error: function(jqXHR, textStatus, errorThrown ) {
-			$('#itemAddVariantModal').modal('hide');
-			$('#alertModal').modal({
-				backdrop: 'static',
-				keyboard: false
-			});
-			$("#alertModalTitle").html('Error');
-			$("#alertModalText").html(textStatus + ": " + errorThrown);
-		},
 		success: function(data, textStatus, jqXHR ) {
 			if (!data.success) {
 				$('#itemAddVariantModalError').show();
@@ -1365,10 +1321,10 @@ function item_add_variant_save() {
 				});
 				$("#alertModalTitle").html('Info submitted');
 				$("#alertModalText").html(data.msg)
-				
+
 				$('#itemAddVariantModalItem').html("");
-				$('#itemAddVariantModalVariant').val("");	
-				$('#itemAddVariantModalUnit').html("");	
+				$('#itemAddVariantModalVariant').val("");
+				$('#itemAddVariantModalUnit').html("");
 				$('#itemAddVariantModalTotalUnit').val("");
 			}
 		}
@@ -1489,8 +1445,6 @@ function add_item_save() {
 		return;
 	}
 	
-	$("#spinner").show();
-	
 	var data = {
 		name: name,
 		variant: variant,
@@ -1501,22 +1455,11 @@ function add_item_save() {
 		price: price,
 		email: email
 	}
-	$.ajax({
+	App.ajax({
 		url: "api.php?url=/add_item",
 		method: "POST",
 		dataType: "json",
 		data: data,
-		complete: function(jqXHR, textStatus) {
-			$("#spinner").hide();
-		},
-		error: function(jqXHR, textStatus, errorThrown ) {
-			$('#alertModal').modal({
-				backdrop: 'static',
-				keyboard: false
-			});
-			$("#alertModalTitle").html('Error');
-			$("#alertModalText").html(textStatus + ": " + errorThrown);
-		},
 		success: function(data, textStatus, jqXHR ) {
 			if (!data.success) {
 				$('#alertModal').modal({
@@ -1532,7 +1475,7 @@ function add_item_save() {
 				});
 				$("#alertModalTitle").html('Item submitted');
 				$("#alertModalText").html(data.msg)
-				
+
 				// clear form
 				hide("add_item_tab");
 				$("#add_item_name").val("");
@@ -1608,25 +1551,12 @@ function add_shop_save() {
 		url: url,
 		email: email
 	}
-	
-	$("#spinner").show();
-	
-	$.ajax({
+
+	App.ajax({
 		url: "api.php?url=/add_shop",
 		method: "POST",
 		dataType: "json",
 		data: data,
-		complete: function(jqXHR, textStatus) {
-			$("#spinner").hide();
-		},
-		error: function(jqXHR, textStatus, errorThrown ) {
-			$('#alertModal').modal({
-				backdrop: 'static',
-				keyboard: false
-			});
-			$("#alertModalTitle").html('Error');
-			$("#alertModalText").html(textStatus + ": " + errorThrown);
-		},
 		success: function(data, textStatus, jqXHR ) {
 			if (!data.success) {
 				$('#alertModal').modal({
@@ -1642,7 +1572,7 @@ function add_shop_save() {
 				});
 				$("#alertModalTitle").html('Info submitted');
 				$("#alertModalText").html(data.msg)
-				
+
 				// clear form
 				hide("add_shop_tab");
 				location.reload();
@@ -1675,25 +1605,12 @@ function add_unit_save() {
 		name: unit_name,
 		email: email
 	}
-	
-	$("#spinner").show();
-	
-	$.ajax({
+
+	App.ajax({
 		url: "api.php?url=/add_unit",
 		method: "POST",
 		dataType: "json",
 		data: data,
-		complete: function(jqXHR, textStatus) {
-			$("#spinner").hide();
-		},
-		error: function(jqXHR, textStatus, errorThrown ) {
-			$('#alertModal').modal({
-				backdrop: 'static',
-				keyboard: false
-			});
-			$("#alertModalTitle").html('Error');
-			$("#alertModalText").html(textStatus + ": " + errorThrown);
-		},
 		success: function(data, textStatus, jqXHR ) {
 			if (!data.success) {
 				$('#alertModal').modal({
@@ -1709,7 +1626,7 @@ function add_unit_save() {
 				});
 				$("#alertModalTitle").html('Info submitted');
 				$("#alertModalText").html(data.msg)
-				
+
 				// clear form
 				hide("add_unit_tab");
 				location.reload();
@@ -1745,25 +1662,12 @@ function contact_send() {
 		email: email,
 		user_name: "<?php echo $_SESSION['user_first_name'] . " " . $_SESSION['user_last_name']; ?>"
 	}
-	
-	$("#spinner").show();
-	
-	$.ajax({
+
+	App.ajax({
 		url: "api.php?url=/feedback",
 		method: "POST",
 		dataType: "json",
 		data: data,
-		complete: function(jqXHR, textStatus) {
-			$("#spinner").hide();
-		},
-		error: function(jqXHR, textStatus, errorThrown ) {
-			$('#alertModal').modal({
-				backdrop: 'static',
-				keyboard: false
-			});
-			$("#alertModalTitle").html('Error');
-			$("#alertModalText").html(textStatus + ": " + errorThrown);
-		},
 		success: function(data, textStatus, jqXHR ) {
 			if (!data.success) {
 				$('#alertModal').modal({
@@ -1779,7 +1683,7 @@ function contact_send() {
 				});
 				$("#alertModalTitle").html('Feedback sent');
 				$("#alertModalText").html(data.msg)
-				
+
 				// clear form
 				hide("contact_tab");
 				$("#contact_subject").val("");
