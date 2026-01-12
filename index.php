@@ -1581,9 +1581,31 @@ function add_shop_save() {
 				$("#alertModalTitle").html('Info submitted');
 				$("#alertModalText").html(data.msg)
 
-				// clear form
+				// clear form and refresh shops data
 				hide("add_shop_tab");
-				location.reload();
+
+				// Refresh shops data
+				App.ajax({
+					url: "api.php?url=/shops",
+					dataType: "json",
+					success: function(data) {
+						if (data.success) {
+							shops = data.shops;
+							var select1 = document.getElementById("itemAddShopModalShop");
+							var select2 = document.getElementById("add_item_shop");
+							select1.innerHTML = '<option value="0">Select shop....</option>';
+							select2.innerHTML = '<option value="0">Select shop....</option>';
+							for (var i = 0; i < shops.length; i++) {
+								var option1 = new Option(shops[i].name, shops[i].id);
+								select1.add(option1);
+								var option2 = new Option(shops[i].name, shops[i].id);
+								select2.add(option2);
+								global_shops[shops[i].id] = shops[i];
+							}
+							$('.selectpicker').selectpicker('refresh');
+						}
+					}
+				});
 			}
 		}
 	});
@@ -1635,9 +1657,26 @@ function add_unit_save() {
 				$("#alertModalTitle").html('Info submitted');
 				$("#alertModalText").html(data.msg)
 
-				// clear form
+				// clear form and refresh units data
 				hide("add_unit_tab");
-				location.reload();
+
+				// Refresh units data
+				App.ajax({
+					url: "api.php?url=/units",
+					dataType: "json",
+					success: function(data) {
+						if (data.success) {
+							units = data.units;
+							var select = document.getElementById("add_item_unit");
+							select.innerHTML = '';
+							for (var i = 0; i < units.length; i++) {
+								var option = new Option(units[i].name, units[i].id);
+								select.add(option);
+							}
+							$('.selectpicker').selectpicker('refresh');
+						}
+					}
+				});
 			}
 		}
 	});
