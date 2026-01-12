@@ -754,10 +754,14 @@ App.ajax = function (options) {
         });
 };
 
-App.showError = function (msg) {
+App.modal = function (title, msg) {
     $('#alertModal').modal({ backdrop: 'static', keyboard: false });
-    $("#alertModalTitle").text('Error');
+    $("#alertModalTitle").text(title);
     $("#alertModalText").text(msg);
+};
+
+App.showError = function (msg) {
+    App.modal('Error', msg);
 };
 
 App.loadItems = function () {
@@ -902,12 +906,7 @@ function item_select_item(value, sort, dir, variant) {
 		dataType: "json",
 		success: function(data, textStatus, jqXHR ) {
 			if (!data.success) {
-				$('#alertModal').modal({
-					backdrop: 'static',
-					keyboard: false
-				});
-				$("#alertModalTitle").html('Error');
-				$("#alertModalText").html(data.error)
+				App.modal('Error', data.error);
 			} else {
 				global_item_detail = data.items;
 				const itemId = data.items[0].item_id;
@@ -1024,20 +1023,10 @@ function item_save_modify_price() {
 		},
 		success: function(data, textStatus, jqXHR ) {
 			if (!data.success) {
-				$('#alertModal').modal({
-					backdrop: 'static',
-					keyboard: false
-				});
-				$("#alertModalTitle").html('Error');
-				$("#alertModalText").html(data.error)
+				App.modal('Error', data.error);
 			} else {
-				$('#alertModal').modal({
-					backdrop: 'static',
-					keyboard: false
-				});
-				$("#alertModalTitle").html('Info submitted');	// kat sini
-				$("#alertModalText").html('Items updated.')
-				
+				App.modal('Info submitted', 'Items updated.');
+
 				value = $("#select-item").val();
 				item_select_item(value, 'price_per_unit', 'asc', 0);
 			}
