@@ -59,6 +59,9 @@ if (!isLoggedIn() && isset($_GET["code"])) {
     // Clear the code used flag after successful authentication
     unset($_SESSION['oauth_code_used']);
 
+    // Generate CSRF token for session
+    $_SESSION['csrf'] = bin2hex(random_bytes(32));
+
     // Server-side redirect to clean URL (more secure than JS)
     header('Location: ' . strtok($_SERVER['REQUEST_URI'], '?'));
     exit();
@@ -803,6 +806,7 @@ for ($i = 0; $i < count($contributor); $i++) {
 ?>
 
 var email = "<?php echo $_SESSION['user_email_address']; ?>";
+var CSRF_TOKEN = "<?php echo $_SESSION['csrf']; ?>";
 
 function loadInitialData() {
 	App.ajax({
@@ -1012,7 +1016,8 @@ function item_save_modify_price() {
 		id: $('#modifyPriceModalID').val(),
 		url: url,
 		price: price,
-		email: email
+		email: email,
+		csrf: CSRF_TOKEN
 	}
 	App.ajax({
 		url: "api.php?url=/item/modify_price",
@@ -1191,7 +1196,8 @@ function item_add_shop_save() {
 		shop: shop,
 		url: url,
 		price: price,
-		email: email
+		email: email,
+		csrf: CSRF_TOKEN
 	};
 
 	App.ajax({
@@ -1310,7 +1316,8 @@ function item_add_variant_save() {
 		variant: variant,
 		item: $('#itemAddVariantModalItemId').val(),
 		unit: total_unit,
-		email: email
+		email: email,
+		csrf: CSRF_TOKEN
 	};
 
 	App.ajax({
@@ -1462,7 +1469,8 @@ function add_item_save() {
 		shop: shop,
 		url: url,
 		price: price,
-		email: email
+		email: email,
+		csrf: CSRF_TOKEN
 	}
 	App.ajax({
 		url: "api.php?url=/add_item",
@@ -1578,7 +1586,8 @@ function add_shop_save() {
 		name: shop_name,
 		online: online,
 		url: url,
-		email: email
+		email: email,
+		csrf: CSRF_TOKEN
 	}
 
 	App.ajax({
@@ -1658,7 +1667,8 @@ function add_unit_save() {
 	
 	var data = {
 		name: unit_name,
-		email: email
+		email: email,
+		csrf: CSRF_TOKEN
 	}
 
 	App.ajax({
@@ -1735,7 +1745,8 @@ function contact_send() {
 		subject: subject,
 		message: message,
 		email: email,
-		user_name: "<?php echo $_SESSION['user_first_name'] . " " . $_SESSION['user_last_name']; ?>"
+		user_name: "<?php echo $_SESSION['user_first_name'] . " " . $_SESSION['user_last_name']; ?>",
+		csrf: CSRF_TOKEN
 	}
 
 	App.ajax({

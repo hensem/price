@@ -4,6 +4,16 @@ require_once 'vendor/autoload.php';
 
 use flight\Engine;
 
+// Verify CSRF token for POST requests
+function verifyCSRF() {
+    if (!isset($_POST['csrf']) || !isset($_SESSION['csrf']) || !hash_equals($_SESSION['csrf'], $_POST['csrf'])) {
+        header('Content-Type: application/json');
+        http_response_code(403);
+        echo json_encode(['success' => false, 'error' => 'CSRF token verification failed']);
+        exit();
+    }
+}
+
 // Check if user is logged in with Google
 function checkAuth() {
     if (!isset($_SESSION['access_token'])) {
@@ -168,6 +178,7 @@ switch ($url_param) {
         }
 
         checkAuth();
+        verifyCSRF();
 
         $data = $_POST;
         $id = $data['id'];
@@ -332,6 +343,7 @@ switch ($url_param) {
         }
 
         checkAuth();
+        verifyCSRF();
 
         $data = $_POST;
         $item = $data['item'];
@@ -420,6 +432,7 @@ switch ($url_param) {
         }
 
         checkAuth();
+        verifyCSRF();
 
         $data = $_POST;
         $variant = trim($data['variant']);
@@ -504,6 +517,7 @@ switch ($url_param) {
         }
 
         checkAuth();
+        verifyCSRF();
 
         $data = $_POST;
         $name = trim($data['name']);
@@ -609,6 +623,7 @@ switch ($url_param) {
         }
 
         checkAuth();
+        verifyCSRF();
 
         $data = $_POST;
         $name = trim($data['name']);
@@ -700,6 +715,7 @@ switch ($url_param) {
         }
 
         checkAuth();
+        verifyCSRF();
 
         $data = $_POST;
         $name = trim($data['name']);
@@ -777,6 +793,7 @@ switch ($url_param) {
         }
 
         checkAuth();
+        verifyCSRF();
 
         $data = $_POST;
         $subject = trim($data['subject']);
