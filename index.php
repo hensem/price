@@ -1484,7 +1484,7 @@ function add_item_save() {
 				$("#alertModalTitle").html('Item submitted');
 				$("#alertModalText").html(data.msg)
 
-				// clear form
+				// clear form and refresh items data
 				hide("add_item_tab");
 				$("#add_item_name").val("");
 				$("#add_item_variant").val("");
@@ -1493,7 +1493,27 @@ function add_item_save() {
 				$("#add_item_shop").val("0").trigger('change');
 				$("#add_item_url").val("");
 				$("#add_item_price").val("");
-				App.loadItems();
+
+				// Clear existing data before refreshing items
+				items = [];
+
+				// Refresh items data
+				App.ajax({
+					url: "api.php?url=/items",
+					dataType: "json",
+					success: function(data) {
+						if (data.success) {
+							items = data.items;
+							var select = document.getElementById("select-item");
+							select.innerHTML = '<option value="0">Select item....</option>';
+							for (var i = 0; i < items.length; i++) {
+								var option = new Option(items[i].item_variant, items[i].id);
+								select.add(option);
+							}
+							$('.selectpicker').selectpicker('refresh');
+						}
+					}
+				});
 			}
 		}
 	});
@@ -1584,6 +1604,10 @@ function add_shop_save() {
 				// clear form and refresh shops data
 				hide("add_shop_tab");
 
+				// Clear existing data before refreshing shops
+				shops = [];
+				global_shops = [];
+
 				// Refresh shops data
 				App.ajax({
 					url: "api.php?url=/shops",
@@ -1659,6 +1683,9 @@ function add_unit_save() {
 
 				// clear form and refresh units data
 				hide("add_unit_tab");
+
+				// Clear existing data before refreshing units
+				units = [];
 
 				// Refresh units data
 				App.ajax({
