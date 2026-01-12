@@ -670,6 +670,15 @@ var global_item_detail = [];
 var letterNumber = /^[0-9a-zA-Z.,':-\s\&()\+%]+$/;
 var valid_url = /^(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
 
+function isValidPrice(val) {
+  const n = parseFloat(val);
+  return !isNaN(n) && n > 0;
+}
+
+function isValidText(val) {
+  return letterNumber.test(val);
+}
+
 function renderTableHeader(itemId, itemName, unit, sort, dir, variant) {
     // Calculate directions for each column
     const shopDir = sort === "shop" ? (dir === "asc" ? "desc" : "asc") : "asc";
@@ -955,7 +964,7 @@ function item_save_modify_price() {
 	$('#modifyPriceModalURLErrorTr').hide();
 	
 	var price = $("#modifyPriceModalPrice").val();
-	
+
 	if (price == "") {
 		$("#modifyPriceModalPriceErrorTr").show();
 		$("#modifyPriceModalPriceError").html("Price is required.");
@@ -963,24 +972,16 @@ function item_save_modify_price() {
 		$("#modifyPriceModalPrice").select();
 		return;
 	}
-	
-	var price = parseFloat(price);
 
-	if (isNaN(price)) {
-		$("#modifyPriceModalPriceErrorTr").show();
-		$("#modifyPriceModalPriceError").html("Only number and decimal point is accepted for Price.");
-		$("#modifyPriceModalPrice").focus();
-		$("#modifyPriceModalPrice").select();
-		return;
-	}
-	
-	if (price <= 0) {
+	if (!isValidPrice(price)) {
 		$("#modifyPriceModalPriceErrorTr").show();
 		$("#modifyPriceModalPriceError").html("Invalid Price.");
 		$("#modifyPriceModalPrice").focus();
 		$("#modifyPriceModalPrice").select();
 		return;
 	}
+
+	price = parseFloat(price);
 	
 	$("#modifyPriceModalPrice").val(price.toFixed(2));
 	
@@ -1173,16 +1174,16 @@ function item_add_shop_save() {
 	} while (true);
 	
 	var price = $("#itemAddShopModalPrice").val();
-	
-	var price = parseFloat(price);
 
-	if (isNaN(price)) {
+	if (!isValidPrice(price)) {
 		$("#itemAddShopModalPriceErrorTr").show();
-		$("#itemAddShopModalPriceError").html("Only number and decimal point is accepted for Price.");
+		$("#itemAddShopModalPriceError").html("Invalid Price.");
 		$("#itemAddShopModalPrice").focus();
 		$("#itemAddShopModalPrice").select();
 		return;
 	}
+
+	price = parseFloat(price);
 	
 	var data = {
 		item: item,
@@ -1277,7 +1278,7 @@ function item_add_variant_save() {
 		return;
 	}
 
-	if (!variant.match(letterNumber)) {
+	if (!isValidText(variant)) {
 		$("#itemAddVariantModalVariantErrorTr").show();
 		$("#itemAddVariantModalVariantError").html("Only Latin characters, numbers and some common symbols are accepted for Variant. Use Feedback for any suggestion.");
 		$("#itemAddVariantModalVariant").focus();
@@ -1370,7 +1371,7 @@ function add_item_save() {
 		return;
 	}
 
-	if (!name.match(letterNumber)) {
+	if (!isValidText(name)) {
 		$("#add_item_name_error_tr").show();
 		$("#add_item_name_error").html("Only Latin characters, numbers and some common symbols are accepted for Item Name. Use Feedback for any suggestion.");
 		$("#add_item_name").focus();
@@ -1387,7 +1388,7 @@ function add_item_save() {
 		return;
 	}
 
-	if (!variant.match(letterNumber)) {
+	if (!isValidText(variant)) {
 		$("#add_item_variant_error_tr").show();
 		$("#add_item_variant_error").html("Only Latin characters, numbers and some common symbols are accepted for Variant. Use Feedback for any suggestion.");
 		$("#add_item_variant").focus();
@@ -1443,15 +1444,15 @@ function add_item_save() {
 	
 	var price = $("#add_item_price").val();
 
-	var price = parseFloat(price);
-
-	if (isNaN(price)) {
+	if (!isValidPrice(price)) {
 		$("#add_item_price_error_tr").show();
-		$("#add_item_price_error").html("Only number and decimal point is accepted for Total Unit.");
+		$("#add_item_price_error").html("Invalid price.");
 		$("#add_item_price").focus();
 		$("#add_item_price").select();
 		return;
 	}
+
+	price = parseFloat(price);
 	
 	var data = {
 		name: name,
@@ -1540,7 +1541,7 @@ function add_shop_save() {
 		return;
 	}
 
-	if (!shop_name.match(letterNumber)) {
+	if (!isValidText(shop_name)) {
 		$("#add_shop_name_error_tr").show();
 		$("#add_shop_name_error").html("Only Latin characters, numbers and some common symbols are accepted for Shop Name. Use Feedback for any suggestion.");
 		$("#add_shop_name").focus();
@@ -1647,7 +1648,7 @@ function add_unit_save() {
 		return;
 	}
 
-	if (!unit_name.match(letterNumber)) {
+	if (!isValidText(unit_name)) {
 		$("#add_unit_name_error_tr").show();
 		$("#add_unit_name_error").html("Only Latin characters, numbers and some common symbols are accepted for Unit. Use Feedback for any suggestion.");
 		$("#add_unit_name").focus();
