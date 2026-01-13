@@ -3,6 +3,16 @@
 //Include Configuration File
 require_once '../../config/config_price.php';
 
+/*
+|--------------------------------------------------------------------------
+| Security Headers (must be sent BEFORE any output)
+|--------------------------------------------------------------------------
+*/
+header('X-Frame-Options: SAMEORIGIN');
+header('X-Content-Type-Options: nosniff');
+header('Referrer-Policy: strict-origin-when-cross-origin');
+header('Permissions-Policy: interest-cohort=()');
+
 $login_button = '';
 
 if (!isLoggedIn() && isset($_GET["code"])) {
