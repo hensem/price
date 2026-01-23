@@ -48,7 +48,9 @@ if (!isLoggedIn() && isset($_GET["code"])) {
 
     // Store tokens securely
     $_SESSION['access_token'] = $token->getToken();
-    $_SESSION['refresh_token'] = $token->getRefreshToken();
+    if ($token->getRefreshToken()) {
+		$_SESSION['refresh_token'] = $token->getRefreshToken();
+	}
     $_SESSION['token_expires'] = $token->getExpires();
 
     // Get and validate user profile
@@ -266,8 +268,10 @@ if (!isLoggedIn())
 				<?php
 				if (empty($login_button)) {
 					?>
-					<img src="<?php echo $_SESSION["user_image"]; ?>" class="img-responsive img-circle img-thumbnail" />
-					<span style="vertical-align:40px;">Welcome <?php echo $_SESSION['user_first_name'] . " " . $_SESSION['user_last_name']; ?></span>
+					<img src="<?= htmlspecialchars($_SESSION['user_image'], ENT_QUOTES) ?>" class="img-responsive img-circle img-thumbnail" />
+					<span>
+					Welcome <?= htmlspecialchars($_SESSION['user_first_name'] . ' ' . $_SESSION['user_last_name'], ENT_QUOTES) ?>
+					</span>
 					<span style="float:right;text-align:right;margin-right: 5px;"><a href="logout.php" class="ui-btn ui-shadow">Logout</a><span>
 					<?php
 				}
@@ -335,7 +339,7 @@ if (!isLoggedIn())
 					</tr><tr>
 						<th>Total Unit</th>
 						<td>
-							<input type="number" id="add_item_total_unit" pattern="[0-9]*" id="item_total_unit">
+							<input type="number" id="add_item_total_unit" pattern="[0-9]*">
 						</td>
 					</tr></tr>
 						<td colspan="2">Number divided by unit. E.g for kg, 600g is 0.6 and 1.2kg is 1.2; for litre, 200ml is 0.2</td>
@@ -717,27 +721,33 @@ function renderTableHeader(itemId, itemName, unit, sort, dir, variant) {
     `;
 }
 
+
 function renderItemRow(item, index, sort, dir, variant) {
     const now = new Date();
     const then = new Date(item.last_update);
-    const diffInDays = Math.round((then - now) / (1000*60*60*24));
+
+    // Calculate the exact date 6 months ago
+    const sixMonthsAgo = new Date(now);
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+    const isOlderThanSixMonths = then < sixMonthsAgo;
 
     let shop = item.shop;
     if (item.url !== "") {
         shop = `<a href="${item.url}" target="_blank">${shop}</a>`;
     }
 
-    const price = diffInDays < -365 ?
-        `<s><span style='color:grey;'>${Number(item.price).toFixed(2)}</span></s>` :
-        Number(item.price).toFixed(2);
+    const price = isOlderThanSixMonths
+        ? `<s><span style='color:grey;'>${Number(item.price).toFixed(2)}</span></s>`
+        : Number(item.price).toFixed(2);
 
-    const pricePerUnit = diffInDays < -365 ?
-        `<s><span style='color:grey;'>${Number(item.price_per_unit).toFixed(2)}</span></s>` :
-        Number(item.price_per_unit).toFixed(2);
+    const pricePerUnit = isOlderThanSixMonths
+        ? `<s><span style='color:grey;'>${Number(item.price_per_unit).toFixed(2)}</span></s>`
+        : Number(item.price_per_unit).toFixed(2);
 
-    const lastUpdate = diffInDays < -365 ?
-        `<span style='color:grey;'>${item.last_update}</span>` :
-        item.last_update;
+    const lastUpdate = isOlderThanSixMonths
+        ? `<span style='color:grey;'>${item.last_update}</span>`
+        : item.last_update;
 
     return `
         <tr>
@@ -747,11 +757,13 @@ function renderItemRow(item, index, sort, dir, variant) {
             <td>${pricePerUnit}</td>
             <td>${lastUpdate}</td>
             <td>
-                <input type="button" id="modifyPriceButton" value="Modify" onclick="item_modify_price(${index}, '${sort}', '${dir}', ${variant})" />
+                <input type="button" id="modifyPriceButton" value="Modify"
+                    onclick="item_modify_price(${index}, '${sort}', '${dir}', ${variant})" />
             </td>
         </tr>
     `;
 }
+
 
 function renderTableFooter(itemId) {
     return `
@@ -1043,7 +1055,7 @@ function item_save_modify_price() {
 			} else {
 				App.modal('Info submitted', 'Items updated.');
 
-				value = $("#select-item").val();
+				var value = $("#select-item").val();
 				item_select_item(value, 'price_per_unit', 'asc', 0);
 			}
 		}
@@ -1113,28 +1125,18 @@ function item_add_shop(item_id) {
 
 function item_add_shop_change_shop() {
 	var shop = $("#itemAddShopModalShop").val();
-	
 	if (shop == "0") return;
-	
-	j = 1;	
-	do {
-		if (global_shops[j] == undefined) {
-			j++;
-			continue;
-		}
-		if (global_shops[j].id == shop) {
-			if (global_shops[j].url == "1") {
-				$('#itemAddShopModalPriceNoteTr').show();
-				$("#itemAddShopModalURLtr").show();
-			} else {
-				$('#itemAddShopModalPriceNoteTr').hide();
-				$("#itemAddShopModalURLtr").hide();
-			}
-			break;
-		} else {
-			j++;
-		}
-	} while (true);
+
+	var shopObj = global_shops[shop];
+	if (!shopObj) return;
+
+	if (shopObj.url == "1") {
+		$('#itemAddShopModalPriceNoteTr').show();
+		$("#itemAddShopModalURLtr").show();
+	} else {
+		$('#itemAddShopModalPriceNoteTr').hide();
+		$("#itemAddShopModalURLtr").hide();
+	}
 }
 
 function item_add_shop_save() {
@@ -1161,32 +1163,21 @@ function item_add_shop_save() {
 		return;
 	}
 	
-	j = 1;	
-	do {
-		if (global_shops[j] == undefined) {
-			j++;
-			continue;
+	var shopObj = global_shops[shop];
+	if (!shopObj) return;
+
+	var url = "";
+	if (shopObj.url == "1") {
+		url = $("#itemAddShopModalURL").val();
+		if (!valid_url.test(url)) {
+			$("#itemAddShopModalURLErrorTr").show();
+			$("#itemAddShopModalURLError").html("Invalid URL.");
+			$("#itemAddShopModalURL").focus();
+			$("#itemAddShopModalURL").select();
+			return;
 		}
-		if (global_shops[j].id == shop) {
-			if (global_shops[j].url == "1") {
-				var url = $("#itemAddShopModalURL").val();
-				if (valid_url.test(url)) {
-					// do nothing
-				} else {
-					$("#itemAddShopModalURLErrorTr").show();
-					$("#itemAddShopModalURLError").html("Invalid URL.");
-					$("#itemAddShopModalURL").focus();
-					$("#itemAddShopModalURL").select();
-					return;
-				}
-			} else {
-				var url = "";
-			}
-			break;
-		} else {
-			j++;
-		}
-	} while (true);
+	}
+
 	
 	var price = $("#itemAddShopModalPrice").val();
 
@@ -1584,7 +1575,7 @@ function add_shop_save() {
 		} else {
 			$("#add_shop_url_error_tr").show();
 			$("#add_shop_url_error").html("Invalid URL");
-			$("#add_shop_ur").focus();
+			$("#add_shop_url").focus();
 			$("#add_shop_ur").select();
 			return;
 		}
