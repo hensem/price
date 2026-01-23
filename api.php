@@ -144,7 +144,7 @@ switch ($url_param) {
             $conn = connect_db();
 
             // Build the query with proper ORDER BY syntax
-            $q = "select * from v_item_shop where item_id = ? order by (last_update < datetime('now', '-6 months')), `{$sort}` {$dir}";
+            $q = "select * from v_item_shop where item_id = ? order by (last_update < datetime('now', '-3 months')), `{$sort}` {$dir}";
             $stmt = $conn->prepare($q);
             if (!$stmt) {
                 header('Content-Type: application/json');

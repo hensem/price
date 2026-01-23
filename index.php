@@ -726,26 +726,27 @@ function renderItemRow(item, index, sort, dir, variant) {
     const now = new Date();
     const then = new Date(item.last_update);
 
-    // Calculate the exact date 6 months ago
-    const sixMonthsAgo = new Date(now);
-    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+    // Calculate the exact date x months ago
+	const months = 3;
+    const monthsAgo = new Date(now);
+    monthsAgo.setMonth(monthsAgo.getMonth() - months);
 
-    const isOlderThanSixMonths = then < sixMonthsAgo;
+    const isOlderThanMonthsAgo = then < monthsAgo;
 
     let shop = item.shop;
     if (item.url !== "") {
         shop = `<a href="${item.url}" target="_blank">${shop}</a>`;
     }
 
-    const price = isOlderThanSixMonths
+    const price = isOlderThanMonthsAgo
         ? `<s><span style='color:grey;'>${Number(item.price).toFixed(2)}</span></s>`
         : Number(item.price).toFixed(2);
 
-    const pricePerUnit = isOlderThanSixMonths
+    const pricePerUnit = isOlderThanMonthsAgo
         ? `<s><span style='color:grey;'>${Number(item.price_per_unit).toFixed(2)}</span></s>`
         : Number(item.price_per_unit).toFixed(2);
 
-    const lastUpdate = isOlderThanSixMonths
+    const lastUpdate = isOlderThanMonthsAgo
         ? `<span style='color:grey;'>${item.last_update}</span>`
         : item.last_update;
 
