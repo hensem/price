@@ -13,6 +13,12 @@ header('X-Content-Type-Options: nosniff');
 header('Referrer-Policy: strict-origin-when-cross-origin');
 header('Permissions-Policy: interest-cohort=()');
 
+// Regenerate CSRF token every 30 minutes
+if (!isset($_SESSION['csrf']) || $_SESSION['csrf_time'] < time() - 1800) {
+    $_SESSION['csrf'] = bin2hex(random_bytes(32));
+    $_SESSION['csrf_time'] = time();
+}
+
 $login_button = '';
 
 if (!isLoggedIn() && isset($_GET["code"])) {
@@ -73,6 +79,7 @@ if (!isLoggedIn() && isset($_GET["code"])) {
 
     // Generate CSRF token for session
     $_SESSION['csrf'] = bin2hex(random_bytes(32));
+    $_SESSION['csrf_time'] = time();
 
     // Server-side redirect to clean URL (more secure than JS)
     header('Location: ' . strtok($_SERVER['REQUEST_URI'], '?'));
