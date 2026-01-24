@@ -14,7 +14,7 @@ header('Referrer-Policy: strict-origin-when-cross-origin');
 header('Permissions-Policy: interest-cohort=()');
 
 // Regenerate CSRF token every 30 minutes
-if (!isset($_SESSION['csrf']) || $_SESSION['csrf_time'] < time() - 1800) {
+if (!isset($_SESSION['csrf']) || !isset($_SESSION['csrf_time']) || $_SESSION['csrf_time'] < time() - 1800) {
     $_SESSION['csrf'] = bin2hex(random_bytes(32));
     $_SESSION['csrf_time'] = time();
 }
