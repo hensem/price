@@ -682,17 +682,29 @@ if (empty($login_button)) {
 ?>
 <script>
 
-var tabs = ["price_tab", "add_item_tab", "add_shop_tab", "add_unit_tab", "contact_tab"];
-var navs = ["price_nav", "add_item_nav", "add_shop_nav", "add_unit_nav", "contact_nav"];
+// Namespace to reduce global scope pollution
+var App = {
+	tabs: ["price_tab", "add_item_tab", "add_shop_tab", "add_unit_tab", "contact_tab"],
+	navs: ["price_nav", "add_item_nav", "add_shop_nav", "add_unit_nav", "contact_nav"],
+	items: [],
+	units: [],
+	shops: [],
+	global_shops: {},
+	global_item_detail: [],
+	letterNumber: /^[0-9a-zA-Z.,':-\s\&()\+%]+$/,
+	valid_url: /^(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i
+};
 
-var items = [];
-var units = [];
-var shops = [];
-var global_shops = [];
-var global_item_detail = [];
-
-var letterNumber = /^[0-9a-zA-Z.,':-\s\&()\+%]+$/;
-var valid_url = /^(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
+// Legacy shortcuts pointing to App namespace
+var items = App.items;
+var units = App.units;
+var shops = App.shops;
+var global_shops = App.global_shops;
+var global_item_detail = App.global_item_detail;
+var tabs = App.tabs;
+var navs = App.navs;
+var letterNumber = App.letterNumber;
+var valid_url = App.valid_url;
 
 function isValidPrice(val) {
   const n = parseFloat(val);
