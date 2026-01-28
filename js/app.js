@@ -32,7 +32,6 @@ function isValidText(val) {
 }
 
 function renderTableHeader(itemId, itemName, unit, sort, dir, variant) {
-    // Calculate directions for each column
     const shopDir = sort === "shop" ? (dir === "asc" ? "desc" : "asc") : "asc";
     const variantDir = sort === "variant" ? (dir === "asc" ? "desc" : "asc") : "asc";
     const priceDir = sort === "price_per_unit" ? (dir === "asc" ? "desc" : "asc") : "asc";
@@ -41,14 +40,14 @@ function renderTableHeader(itemId, itemName, unit, sort, dir, variant) {
         <table border="1">
             <tr>
                 <th>
-                    <a href='javascript:void(0)' onclick='item_select_item(${itemId}, "shop", "${shopDir}", ${variant})'>${itemName}</a>
+                    <a href='javascript:void(0)' data-item-id='${itemId}' data-sort='shop' data-dir='${shopDir}' data-variant='${variant}' class='sort-link'>${itemName}</a>
                 </th>
                 <th>
-                    <a href='javascript:void(0)' onclick='item_select_item(${itemId}, "variant", "${variantDir}", ${variant})'>Variant</a>
+                    <a href='javascript:void(0)' data-item-id='${itemId}' data-sort='variant' data-dir='${variantDir}' data-variant='${variant}' class='sort-link'>Variant</a>
                 </th>
                 <th>Price</th>
                 <th>
-                    <a href='javascript:void(0)' onclick='item_select_item(${itemId}, "price_per_unit", "${priceDir}", ${variant})'>Price per ${unit}</a>
+                    <a href='javascript:void(0)' data-item-id='${itemId}' data-sort='price_per_unit' data-dir='${priceDir}' data-variant='${variant}' class='sort-link'>Price per ${unit}</a>
                 </th>
                 <th>Date</th>
                 <th></th>
@@ -61,7 +60,6 @@ function renderItemRow(item, index, sort, dir, variant) {
     const now = new Date();
     const then = new Date(item.last_update);
 
-    // Calculate the exact date x months ago
 	const months = 3;
     const monthsAgo = new Date(now);
     monthsAgo.setMonth(monthsAgo.getMonth() - months);
@@ -93,8 +91,7 @@ function renderItemRow(item, index, sort, dir, variant) {
             <td>${pricePerUnit}</td>
             <td>${lastUpdate}</td>
             <td>
-                <input type="button" id="modifyPriceButton" value="Modify"
-                    onclick="item_modify_price(${index}, '${sort}', '${dir}', ${variant})" />
+                <input type="button" value="Modify" data-index="${index}" data-sort="${sort}" data-dir="${dir}" data-variant="${variant}" class="modify-price-btn" />
             </td>
         </tr>
     `;
@@ -105,9 +102,9 @@ function renderTableFooter(itemId) {
     return `
         </table>
         <br /><br />
-        <input type="button" id="addShopButton" value="Add Shop" onclick="item_add_shop(${itemId})" />
+        <input type="button" value="Add Shop" data-item-id="${itemId}" class="add-shop-btn" />
         &nbsp;&nbsp;&nbsp;&nbsp;
-        <input type="button" id="addVariantButton" value="Add Variant" onclick="item_add_variant(${itemId})" />
+        <input type="button" value="Add Variant" data-item-id="${itemId}" class="add-variant-btn" />
     `;
 }
 

@@ -290,26 +290,26 @@ if (!isLoggedIn())
 			<div class="spinner-border"></div>
 			<ul class="nav nav-pills nav-fill" role="navigation">
 			  <li class="nav-item">
-				<a class="nav-link active" href="javascript:void(0)" onclick="hide('price_tab')" id="price_nav">Price</a>
+				<a class="nav-link active" href="javascript:void(0)" data-tab="price_tab" id="price_nav">Price</a>
 			  </li>
 			  <li class="nav-item">
-				<a class="nav-link" href="javascript:void(0)" onclick="hide('add_item_tab')" id="add_item_nav">Add Item</a>
+				<a class="nav-link" href="javascript:void(0)" data-tab="add_item_tab" id="add_item_nav">Add Item</a>
 			  </li>
 			  <li class="nav-item">
-				<a class="nav-link" href="javascript:void(0)" onclick="hide('add_shop_tab')" id="add_shop_nav">Add Shop</a>
+				<a class="nav-link" href="javascript:void(0)" data-tab="add_shop_tab" id="add_shop_nav">Add Shop</a>
 			  </li>
 			  <li class="nav-item">
-				<a class="nav-link" href="javascript:void(0)" onclick="hide('add_unit_tab')" id="add_unit_nav">Add Unit</a>
+				<a class="nav-link" href="javascript:void(0)" data-tab="add_unit_tab" id="add_unit_nav">Add Unit</a>
 			  </li>
 			   <li class="nav-item">
-				<a class="nav-link" href="javascript:void(0)" onclick="hide('contact_tab')" id="contact_nav">Feedback</a>
+				<a class="nav-link" href="javascript:void(0)" data-tab="contact_tab" id="contact_nav">Feedback</a>
 			  </li>
 			</ul>
 			
 			<br />
 				
 			<div id="price_tab">
-				<select id="select-item" data-native-menu="false" class="selectpicker" data-live-search="true" onchange="item_select_item(this.value, 'price_per_unit', 'asc', 0)">
+				<select id="select-item" data-native-menu="false" class="selectpicker" data-live-search="true">
 					<option value="0">Select item....</option>
 				</select>
 				
@@ -355,7 +355,7 @@ if (!isLoggedIn())
 					</tr><tr>
 						<th>Shop</th>
 						<td>
-							<select id="add_item_shop" data-native-menu="false" class="selectpicker" data-live-search="true" onchange="add_item_select_shop(this)">
+							<select id="add_item_shop" data-native-menu="false" class="selectpicker" data-live-search="true">
 								<option value="0">Select shop....</option>
 							</select>
 						</td>
@@ -374,7 +374,7 @@ if (!isLoggedIn())
 					</tr><tr id="add_item_price_error_tr">
 						<td colspan="2"><div class="alert alert-danger" role="alert" id="add_item_price_error"></div></td>
 					</tr><tr>
-						<td colspan="2"><input type="button" value="Save" data-theme="a" onclick="add_item_save()" /></td>
+						<td colspan="2"><input type="button" value="Save" data-theme="a" data-action="add_item_save" /></td>
 					</tr>
 				</table>
 			</div>
@@ -393,7 +393,7 @@ if (!isLoggedIn())
 					</tr><tr>
 						<th>Online Shop?</th>
 						<td>
-							<select id="add_shop_is_online" onchange="add_shop_select_is_online(this)">
+							<select id="add_shop_is_online">
 								<option value="1">No</option>
 								<option value="2">Yes</option>
 							</select>					
@@ -408,7 +408,7 @@ if (!isLoggedIn())
 							<div class="alert alert-danger" role="alert" id="add_shop_url_error"></div>
 						</td>
 					</tr><tr>
-						<td colspan="2"><input type="button" value="Save" data-theme="a" onclick="add_shop_save()" /></td>
+						<td colspan="2"><input type="button" value="Save" data-theme="a" data-action="add_shop_save" /></td>
 					</tr>
 				</table>
 			</div>
@@ -425,7 +425,7 @@ if (!isLoggedIn())
 							<div class="alert alert-danger" role="alert" id="add_unit_name_error"></div>
 						</td>
 					</tr><tr>
-						<td colspan="2"><input type="button" value="Save" data-theme="a" onclick="add_unit_save()" /></td>
+						<td colspan="2"><input type="button" value="Save" data-theme="a" data-action="add_unit_save" /></td>
 					</tr>
 				</table>
 			</div>
@@ -453,7 +453,7 @@ if (!isLoggedIn())
 							<div class="alert alert-danger" role="alert" id="contact_message_error"></div>
 						</td>
 					</tr><tr>
-						<td><input type="button" value="Send" data-theme="a" onclick="contact_send()" /></td>
+						<td><input type="button" value="Send" data-theme="a" data-action="contact_send" /></td>
 					</tr>
 				</table>
 			</div>
@@ -536,7 +536,7 @@ if (!isLoggedIn())
 							</p>
 						</div>
 						<div class="modal-footer">
-							<button type="button" class="btn btn-default" onclick="item_save_modify_price()">Save</button>
+							<button type="button" class="btn btn-default" data-action="item_save_modify_price">Save</button>
 							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 						</div>
 					</div>
@@ -571,7 +571,7 @@ if (!isLoggedIn())
 									</tr><tr>
 										<th>Shop</th>
 										<td>
-											<select id="itemAddShopModalShop" data-native-menu="false" class="selectpicker" data-live-search="true" onchange="item_add_shop_change_shop()">
+											<select id="itemAddShopModalShop" data-native-menu="false" class="selectpicker" data-live-search="true">
 												<option value="0">Select shop....</option>
 											</select>
 										</td>
@@ -605,7 +605,7 @@ if (!isLoggedIn())
 							</p>
 						</div>
 						<div class="modal-footer">
-							<button type="button" class="btn btn-default" onclick="item_add_shop_save()">Save</button>
+							<button type="button" class="btn btn-default" data-action="item_add_shop_save">Save</button>
 							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 						</div>
 					</div>
@@ -657,7 +657,7 @@ if (!isLoggedIn())
 							</p>
 						</div>
 						<div class="modal-footer">
-							<button type="button" class="btn btn-default" onclick="item_add_variant_save()">Save</button>
+							<button type="button" class="btn btn-default" data-action="item_add_variant_save">Save</button>
 							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 						</div>
 					</div>
@@ -694,9 +694,59 @@ var email = "<?php echo $_SESSION['user_email_address']; ?>";
 var user_name = "<?php echo $_SESSION['user_first_name'] . " " . $_SESSION['user_last_name']; ?>";
 var CSRF_TOKEN = "<?php echo $_SESSION['csrf']; ?>";
 
-// Load the main application script
 $(document).ready(function() {
     loadInitialData();
+    
+    // Event delegation for all click events
+    $(document).on('click', '[data-tab]', function(e) {
+        e.preventDefault();
+        hide($(this).data('tab'));
+    });
+    
+    $(document).on('click', '[data-action]', function(e) {
+        e.preventDefault();
+        const action = $(this).data('action');
+        window[action]();
+    });
+    
+    $(document).on('click', '.sort-link', function(e) {
+        e.preventDefault();
+        const $this = $(this);
+        item_select_item($this.data('item-id'), $this.data('sort'), $this.data('dir'), $this.data('variant'));
+    });
+    
+    $(document).on('click', '.modify-price-btn', function(e) {
+        e.preventDefault();
+        const $this = $(this);
+        item_modify_price($this.data('index'), $this.data('sort'), $this.data('dir'), $this.data('variant'));
+    });
+    
+    $(document).on('click', '.add-shop-btn', function(e) {
+        e.preventDefault();
+        item_add_shop($(this).data('item-id'));
+    });
+    
+    $(document).on('click', '.add-variant-btn', function(e) {
+        e.preventDefault();
+        item_add_variant($(this).data('item-id'));
+    });
+    
+    // Change event delegation
+    $(document).on('change', '#select-item', function() {
+        item_select_item(this.value, 'price_per_unit', 'asc', 0);
+    });
+    
+    $(document).on('change', '#add_item_shop', function() {
+        add_item_select_shop(this);
+    });
+    
+    $(document).on('change', '#add_shop_is_online', function() {
+        add_shop_select_is_online(this);
+    });
+    
+    $(document).on('change', '#itemAddShopModalShop', function() {
+        item_add_shop_change_shop();
+    });
 });
 </script>
 <script src="js/app.js"></script>
