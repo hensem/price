@@ -12,7 +12,6 @@ header('X-Frame-Options: SAMEORIGIN');
 header('X-Content-Type-Options: nosniff');
 header('Referrer-Policy: strict-origin-when-cross-origin');
 header('Permissions-Policy: interest-cohort=()');
-header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://code.jquery.com https://cdnjs.cloudflare.com https://maxcdn.bootstrapcdn.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://maxcdn.bootstrapcdn.com https://cdn.jsdelivr.net; img-src 'self' data: https:; connect-src 'self'; font-src 'self' https://maxcdn.bootstrapcdn.com https://cdn.jsdelivr.net;");
 
 // Regenerate CSRF token every 30 minutes
 if (!isset($_SESSION['csrf']) || $_SESSION['csrf_time'] < time() - 1800) {
@@ -263,7 +262,7 @@ if (!isLoggedIn())
 	}
 	</style>
 
-    <title>Price Tracker</title>
+    <title>Hello, world!</title>
   </head>
   <body>
 	<div class="container-fluid">
