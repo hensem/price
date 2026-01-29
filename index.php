@@ -581,18 +581,23 @@
 if (empty($login_button)) {
 ?>
 <script>
+
+function escapeJs(str) {
+	return str.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/'/g, "\\'").replace(/\n/g, '\\n').replace(/\r/g, '\\r');
+}
 var contributor = [];
 <?php
 for ($i = 0; $i < count($contributor); $i++) {
+	$safe = htmlspecialchars($contributor[$i], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 	?>
-	contributor[contributor.length] = "<?php echo $contributor[$i]; ?>";
+	contributor[contributor.length] = "<?php echo $safe; ?>";
 	<?php
 }
 ?>
 
-var email = "<?php echo $_SESSION['user_email_address']; ?>";
-var user_name = "<?php echo $_SESSION['user_first_name'] . " " . $_SESSION['user_last_name']; ?>";
-var CSRF_TOKEN = "<?php echo $_SESSION['csrf']; ?>";
+var email = "<?php echo htmlspecialchars($_SESSION['user_email_address'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>";
+var user_name = "<?php echo htmlspecialchars($_SESSION['user_first_name'] . ' ' . $_SESSION['user_last_name'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>";
+var CSRF_TOKEN = "<?php echo htmlspecialchars($_SESSION['csrf'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>";
 
 $(document).ready(function() {
     loadInitialData();
