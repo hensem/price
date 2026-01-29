@@ -269,7 +269,7 @@ if (!isLoggedIn())
 	<div class="container-fluid">
 	<?php
 		if (!empty($login_button)) {
-			echo '<div style="text-align: center;">' . $login_button . '</div>';
+			echo '<div align="center">' . $login_button . '</div>';
 		} else {
 			?>
 			<div>
