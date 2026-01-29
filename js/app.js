@@ -130,64 +130,31 @@ App.showError = function (msg) {
     App.modal('Error', msg);
 };
 
-App.loadItems = function () {
-    App.ajax({
-        url: "api.php?url=/items",
-        dataType: "json",
-        success: function(data) {
-            if (data.success) {
-                items = data.items;
-                var select = document.getElementById("select-item");
-                // Clear existing options except the first one
-                select.innerHTML = '<option value="0">Select item....</option>';
-                for (var i = 0; i < items.length; i++) {
-                    var option = new Option(items[i].item_variant, items[i].id);
-                    select.add(option);
-                }
-                $('.selectpicker').selectpicker('refresh');
-            }
-        }
-    });
-};
+
 
 function loadInitialData() {
 	App.ajax({
-		url: "api.php?url=/items",
+		url: "api.php?url=/initial_data",
 		dataType: "json",
 		success: function(data) {
 			if (data.success) {
+				// Populate items
 				items = data.items;
 				var select = document.getElementById("select-item");
 				for (var i = 0; i < items.length; i++) {
 					var option = new Option(items[i].item_variant, items[i].id);
 					select.add(option);
 				}
-				$('.selectpicker').selectpicker('refresh');
-			}
-		}
-	});
 
-	App.ajax({
-		url: "api.php?url=/units",
-		dataType: "json",
-		success: function(data) {
-			if (data.success) {
+				// Populate units
 				units = data.units;
-				var select = document.getElementById("add_item_unit");
+				var selectUnit = document.getElementById("add_item_unit");
 				for (var i = 0; i < units.length; i++) {
 					var option = new Option(units[i].name, units[i].id);
-					select.add(option);
+					selectUnit.add(option);
 				}
-				$('.selectpicker').selectpicker('refresh');
-			}
-		}
-	});
 
-	App.ajax({
-		url: "api.php?url=/shops",
-		dataType: "json",
-		success: function(data) {
-			if (data.success) {
+				// Populate shops
 				shops = data.shops;
 				var select1 = document.getElementById("itemAddShopModalShop");
 				var select2 = document.getElementById("add_item_shop");
@@ -198,6 +165,7 @@ function loadInitialData() {
 					select2.add(option2);
 					global_shops[shops[i].id] = shops[i];
 				}
+
 				$('.selectpicker').selectpicker('refresh');
 			}
 		}
