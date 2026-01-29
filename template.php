@@ -15,7 +15,7 @@
 	
 	<link rel="stylesheet" href="css/style.css">
 
-    <title>Price Tracker</title>
+    <title>Hello, World!</title>
   </head>
   <body>
 	<div class="container-fluid">
