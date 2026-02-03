@@ -22,16 +22,16 @@ const navs = App.navs;
 const letterNumber = App.letterNumber;
 const valid_url = App.valid_url;
 
-function isValidPrice(val) {
+const isValidPrice = (val) => {
   const n = parseFloat(val);
   return !isNaN(n) && n > 0;
-}
+};
 
-function isValidText(val) {
+const isValidText = (val) => {
   return letterNumber.test(val);
-}
+};
 
-function renderTableHeader(itemId, itemName, unit, sort, dir, variant) {
+const renderTableHeader = (itemId, itemName, unit, sort, dir, variant) => {
     const shopDir = sort === "shop" ? (dir === "asc" ? "desc" : "asc") : "asc";
     const variantDir = sort === "variant" ? (dir === "asc" ? "desc" : "asc") : "asc";
     const priceDir = sort === "price_per_unit" ? (dir === "asc" ? "desc" : "asc") : "asc";
@@ -56,7 +56,7 @@ function renderTableHeader(itemId, itemName, unit, sort, dir, variant) {
 }
 
 
-function renderItemRow(item, index, sort, dir, variant) {
+const renderItemRow = (item, index, sort, dir, variant) => {
     const now = new Date();
     const then = new Date(item.last_update);
 
@@ -98,7 +98,7 @@ function renderItemRow(item, index, sort, dir, variant) {
 }
 
 
-function renderTableFooter(itemId) {
+const renderTableFooter = (itemId) => {
     return `
         </table>
         <br /><br />
@@ -108,7 +108,7 @@ function renderTableFooter(itemId) {
     `;
 }
 
-App.ajax = function (options) {
+App.ajax = (options) => {
     $("#spinner").show();
 
     return $.ajax(options)
@@ -120,13 +120,13 @@ App.ajax = function (options) {
         });
 };
 
-App.modal = function (title, msg) {
+App.modal = (title, msg) => {
     $('#alertModal').modal({ backdrop: 'static', keyboard: false });
     $("#alertModalTitle").text(title);
     $("#alertModalText").text(msg);
 };
 
-App.showError = function (msg) {
+App.showError = (msg) => {
     App.modal('Error', msg);
 };
 
@@ -136,7 +136,7 @@ function loadInitialData() {
 	App.ajax({
 		url: "api.php?url=/initial_data",
 		dataType: "json",
-		success: function(data) {
+		success: (data) => {
 			if (data.success) {
 				// Populate items
 				items = data.items;
