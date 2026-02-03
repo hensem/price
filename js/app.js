@@ -1,5 +1,5 @@
 // Namespace to reduce global scope pollution
-var App = {
+const App = {
 	tabs: ["price_tab", "add_item_tab", "add_shop_tab", "add_unit_tab", "contact_tab"],
 	navs: ["price_nav", "add_item_nav", "add_shop_nav", "add_unit_nav", "contact_nav"],
 	items: [],
@@ -12,15 +12,15 @@ var App = {
 };
 
 // Legacy shortcuts pointing to App namespace
-var items = App.items;
-var units = App.units;
-var shops = App.shops;
-var global_shops = App.global_shops;
-var global_item_detail = App.global_item_detail;
-var tabs = App.tabs;
-var navs = App.navs;
-var letterNumber = App.letterNumber;
-var valid_url = App.valid_url;
+let items = App.items;
+let units = App.units;
+let shops = App.shops;
+let global_shops = App.global_shops;
+let global_item_detail = App.global_item_detail;
+const tabs = App.tabs;
+const navs = App.navs;
+const letterNumber = App.letterNumber;
+const valid_url = App.valid_url;
 
 function isValidPrice(val) {
   const n = parseFloat(val);
@@ -140,28 +140,28 @@ function loadInitialData() {
 			if (data.success) {
 				// Populate items
 				items = data.items;
-				var select = document.getElementById("select-item");
-				for (var i = 0; i < items.length; i++) {
-					var option = new Option(items[i].item_variant, items[i].id);
+				const select = document.getElementById("select-item");
+				for (let i = 0; i < items.length; i++) {
+					const option = new Option(items[i].item_variant, items[i].id);
 					select.add(option);
 				}
 
 				// Populate units
 				units = data.units;
-				var selectUnit = document.getElementById("add_item_unit");
-				for (var i = 0; i < units.length; i++) {
-					var option = new Option(units[i].name, units[i].id);
+				const selectUnit = document.getElementById("add_item_unit");
+				for (let i = 0; i < units.length; i++) {
+					const option = new Option(units[i].name, units[i].id);
 					selectUnit.add(option);
 				}
 
 				// Populate shops
 				shops = data.shops;
-				var select1 = document.getElementById("itemAddShopModalShop");
-				var select2 = document.getElementById("add_item_shop");
-				for (var i = 0; i < shops.length; i++) {
-					var option1 = new Option(shops[i].name, shops[i].id);
+				const select1 = document.getElementById("itemAddShopModalShop");
+				const select2 = document.getElementById("add_item_shop");
+				for (let i = 0; i < shops.length; i++) {
+					const option1 = new Option(shops[i].name, shops[i].id);
 					select1.add(option1);
-					var option2 = new Option(shops[i].name, shops[i].id);
+					const option2 = new Option(shops[i].name, shops[i].id);
 					select2.add(option2);
 					global_shops[shops[i].id] = shops[i];
 				}
@@ -177,7 +177,7 @@ function loadInitialData() {
 }
 
 function hide(tab) {
-	for (var j = 0; j < tabs.length; j++) {
+	for (let j = 0; j < tabs.length; j++) {
 		if (tabs[j] != tab) {
 			$('#' + tabs[j]).hide();
 			$('#' + navs[j]).removeClass("nav-link active");
@@ -279,7 +279,7 @@ function item_save_modify_price() {
 	$('#modifyPriceModalPriceErrorTr').hide();
 	$('#modifyPriceModalURLErrorTr').hide();
 	
-	var price = $("#modifyPriceModalPrice").val();
+	let price = $("#modifyPriceModalPrice").val();
 
 	if (price == "") {
 		$("#modifyPriceModalPriceErrorTr").show();
@@ -301,10 +301,11 @@ function item_save_modify_price() {
 	
 	$("#modifyPriceModalPrice").val(price.toFixed(2));
 	
-	var url_required = $("#modifyPriceModalURLRequired").val();
+	const url_required = $("#modifyPriceModalURLRequired").val();
 	
+	let url;
 	if (url_required == "1") {
-		var url = $("#modifyPriceModalURL").val();
+		url = $("#modifyPriceModalURL").val();
 		if (url == "") {
 			$('#modifyPriceModalURLErrorTr').show();
 			$("#modifyPriceModalURLError").html("URL is required");
@@ -324,7 +325,7 @@ function item_save_modify_price() {
 		url = "";
 	}
 	
-	var data = {
+	const data = {
 		id: $('#modifyPriceModalID').val(),
 		url: url,
 		price: price,
@@ -345,7 +346,7 @@ function item_save_modify_price() {
 			} else {
 				App.modal('Info submitted', 'Items updated.');
 
-				var value = $("#select-item").val();
+				const value = $("#select-item").val();
 				item_select_item(value, 'price_per_unit', 'asc', 0);
 			}
 		}
@@ -355,9 +356,9 @@ function item_save_modify_price() {
 function item_add_shop(item_id) {
 	$('#itemAddShopModalItem').html("");
 	
-	var length = document.getElementById("itemAddShopModalVariant").length;
+	const length = document.getElementById("itemAddShopModalVariant").length;
 	if (length > 1) {
-		for (var k = 1; k < length; k++) {
+		for (let k = 1; k < length; k++) {
 			document.getElementById("itemAddShopModalVariant").remove(k);
 		}
 	}
@@ -374,9 +375,9 @@ function item_add_shop(item_id) {
 	$('#itemAddShopModalURL').val("");	
 	$('#itemAddShopModalPrice').val("");
 	
-	var items_index;
+	let items_index;
 	
-	for (var j = 0; j < items.length; j++) {
+	for (let j = 0; j < items.length; j++) {
 		if (items[j].id == item_id) {
 			items_index = j;
 			break;
@@ -401,9 +402,9 @@ function item_add_shop(item_id) {
 				});
 				$('#itemAddShopModalItem').html(items[items_index].name);
 				$('#itemAddShopModalItemId').val(items[items_index].id);
-				var select = document.getElementById("itemAddShopModalVariant");
-				for (var m = 0; m < data.variant.length; m++) {
-					var option = new Option(data.variant[m].name, data.variant[m].id);
+				const select = document.getElementById("itemAddShopModalVariant");
+				for (let m = 0; m < data.variant.length; m++) {
+					const option = new Option(data.variant[m].name, data.variant[m].id);
 					select.add(option);
 				}
 				$('.selectpicker').selectpicker('refresh');
@@ -414,10 +415,10 @@ function item_add_shop(item_id) {
 }
 
 function item_add_shop_change_shop() {
-	var shop = $("#itemAddShopModalShop").val();
+	const shop = $("#itemAddShopModalShop").val();
 	if (shop == "0") return;
 
-	var shopObj = global_shops[shop];
+	const shopObj = global_shops[shop];
 	if (!shopObj) return;
 
 	if (shopObj.url == "1") {
@@ -435,9 +436,9 @@ function item_add_shop_save() {
 	$('#itemAddShopModalURLErrorTr').hide();
 	$('#itemAddShopModalPriceErrorTr').hide();
 	
-	var item = $("#itemAddShopModalItemId").val();
+	const item = $("#itemAddShopModalItemId").val();
 	
-	var variant = $("#itemAddShopModalVariant").val();
+	const variant = $("#itemAddShopModalVariant").val();
 	
 	if (variant == 0) {
 		$('#itemAddShopModalVariantErrorTr').show();
@@ -445,7 +446,7 @@ function item_add_shop_save() {
 		return;
 	}
 	
-	var shop = $("#itemAddShopModalShop").val();
+	const shop = $("#itemAddShopModalShop").val();
 	
 	if (shop == 0) {
 		$('#itemAddShopModalShopErrorTr').show();
@@ -453,10 +454,10 @@ function item_add_shop_save() {
 		return;
 	}
 	
-	var shopObj = global_shops[shop];
+	const shopObj = global_shops[shop];
 	if (!shopObj) return;
 
-	var url = "";
+	let url = "";
 	if (shopObj.url == "1") {
 		url = $("#itemAddShopModalURL").val();
 		if (!valid_url.test(url)) {
@@ -469,7 +470,7 @@ function item_add_shop_save() {
 	}
 
 	
-	var price = $("#itemAddShopModalPrice").val();
+	let price = $("#itemAddShopModalPrice").val();
 
 	if (!isValidPrice(price)) {
 		$("#itemAddShopModalPriceErrorTr").show();
@@ -481,7 +482,7 @@ function item_add_shop_save() {
 
 	price = parseFloat(price);
 	
-	var data = {
+	const data = {
 		item: item,
 		variant: variant,
 		shop: shop,
@@ -514,9 +515,9 @@ function item_add_shop_save() {
 				$('#itemAddShopModalPrice').val("");
 				$('#itemAddShopModalError').html("");
 				$('#itemAddShopModalError').hide();
-				var length = document.getElementById("itemAddShopModalVariant").length;
+				const length = document.getElementById("itemAddShopModalVariant").length;
 				if (length > 1) {
-					for (var k = 1; k < length; k++) {
+					for (let k = 1; k < length; k++) {
 						document.getElementById("itemAddShopModalVariant").remove(k);
 					}
 				}
@@ -533,18 +534,18 @@ function item_add_variant(item_id) {
 	$('#itemAddVariantModalTotalUnitErrorTr').hide();
 	$('#itemAddVariantModalError').hide();
 	
-	var items_index;
+	let items_index;
 	
-	for (var j = 0; j < items.length; j++) {
+	for (let j = 0; j < items.length; j++) {
 		if (items[j].id == item_id) {
 			items_index = j;
 			break;
 		}
 	}
 	
-	var units_index;
+	let units_index;
 	
-	for (var j = 0; j < units.length; j++) {
+	for (let j = 0; j < units.length; j++) {
 		if (units[j].id == items[items_index].unit) {
 			units_index = j;
 			break;
@@ -566,7 +567,7 @@ function item_add_variant_save() {
 	$('#itemAddVariantModalTotalUnitErrorTr').hide();
 	$('#itemAddVariantModalError').hide();
 	
-	var variant = $('#itemAddVariantModalVariant').val();
+	const variant = $('#itemAddVariantModalVariant').val();
 	
 	if (variant == "") {
 		$('#itemAddVariantModalVariantErrorTr').show();
@@ -583,7 +584,7 @@ function item_add_variant_save() {
 		return;
 	}
 	
-	var total_unit = $('#itemAddVariantModalTotalUnit').val();
+	let total_unit = $('#itemAddVariantModalTotalUnit').val();
 	
 	total_unit = parseFloat(total_unit);
 	
@@ -603,7 +604,7 @@ function item_add_variant_save() {
 		return;
 	}
 	
-	var data = {
+	const data = {
 		variant: variant,
 		item: $('#itemAddVariantModalItemId').val(),
 		unit: total_unit,
@@ -660,7 +661,7 @@ function add_item_save() {
 	$("#add_item_shop_error_tr").hide();
 	$("#add_item_price_error_tr").hide();
 	
-	var name = $("#add_item_name").val();
+	const name = $("#add_item_name").val();
 	
 	if (name == "") {
 		$("#add_item_name_error_tr").show();
@@ -677,7 +678,7 @@ function add_item_save() {
 		return;
 	}
 	
-	var variant = $("#add_item_variant").val();
+	const variant = $("#add_item_variant").val();
 
 	if (variant == "") {
 		$("#add_item_variant_error_tr").show();
@@ -694,11 +695,11 @@ function add_item_save() {
 		return;
 	}
 	
-	var unit = $("#add_item_unit").val();
+	const unit = $("#add_item_unit").val();
 	
-	var total_unit = $("#add_item_total_unit").val();
+	let total_unit = $("#add_item_total_unit").val();
 	
-	var total_unit = parseFloat(total_unit);
+	total_unit = parseFloat(total_unit);
 
 	if (isNaN(total_unit)) {
 		$("#add_item_total_unit_error_tr").show();
@@ -708,7 +709,7 @@ function add_item_save() {
 		return;
 	}
 	
-	var shop = $("#add_item_shop").val();
+	const shop = $("#add_item_shop").val();
 	
 	if (shop == "0") {
 		$("#add_item_shop_error_tr").show();
@@ -718,8 +719,9 @@ function add_item_save() {
 		return;
 	}
 	
+	let url;
 	if (global_shops[shop].url == "1") {
-		var url = $("#add_item_url").val();
+		url = $("#add_item_url").val();
 		if (url == "") {
 			$("#add_item_url_error_tr").show();
 			$("#add_item_url_error").html("URL required.");
@@ -737,10 +739,10 @@ function add_item_save() {
 			return;
 		}
 	} else {
-		var url = "";
+		url = "";
 	}
 	
-	var price = $("#add_item_price").val();
+	let price = $("#add_item_price").val();
 
 	if (!isValidPrice(price)) {
 		$("#add_item_price_error_tr").show();
@@ -752,7 +754,7 @@ function add_item_save() {
 
 	price = parseFloat(price);
 	
-	var data = {
+	const data = {
 		name: name,
 		variant: variant,
 		unit: unit,
@@ -804,10 +806,10 @@ function add_item_save() {
 					success: function(data) {
 						if (data.success) {
 							items = data.items;
-							var select = document.getElementById("select-item");
+							const select = document.getElementById("select-item");
 							select.innerHTML = '<option value="0">Select item....</option>';
-							for (var i = 0; i < items.length; i++) {
-								var option = new Option(items[i].item_variant, items[i].id);
+							for (let i = 0; i < items.length; i++) {
+								const option = new Option(items[i].item_variant, items[i].id);
 								select.add(option);
 							}
 							$('.selectpicker').selectpicker('refresh');
@@ -831,7 +833,7 @@ function add_shop_save() {
 	$("#add_shop_name_error_tr").hide();
 	$("#add_shop_url_error_tr").hide();
 	
-	var shop_name = $("#add_shop_name").val();
+	const shop_name = $("#add_shop_name").val();
 	
 	if (shop_name == "") {
 		$("#add_shop_name_error_tr").show();
@@ -848,10 +850,11 @@ function add_shop_save() {
 		return;
 	}
 	
-	var online = $("#add_shop_is_online").val();
+	const online = $("#add_shop_is_online").val();
 	
+	let url;
 	if ((online == 2) && !contributor.includes(email)) {
-		var url = $("#add_shop_url").val();
+		url = $("#add_shop_url").val();
 		
 		if (url == "") {
 			$("#add_shop_url_error_tr").show();
@@ -870,10 +873,10 @@ function add_shop_save() {
 			return;
 		}
 	} else {
-		var url = "";
+		url = "";
 	}
 	
-	var data = {
+	const data = {
 		name: shop_name,
 		online: online,
 		url: url,
@@ -916,14 +919,14 @@ function add_shop_save() {
 					success: function(data) {
 						if (data.success) {
 							shops = data.shops;
-							var select1 = document.getElementById("itemAddShopModalShop");
-							var select2 = document.getElementById("add_item_shop");
+							const select1 = document.getElementById("itemAddShopModalShop");
+							const select2 = document.getElementById("add_item_shop");
 							select1.innerHTML = '<option value="0">Select shop....</option>';
 							select2.innerHTML = '<option value="0">Select shop....</option>';
-							for (var i = 0; i < shops.length; i++) {
-								var option1 = new Option(shops[i].name, shops[i].id);
+							for (let i = 0; i < shops.length; i++) {
+								const option1 = new Option(shops[i].name, shops[i].id);
 								select1.add(option1);
-								var option2 = new Option(shops[i].name, shops[i].id);
+								const option2 = new Option(shops[i].name, shops[i].id);
 								select2.add(option2);
 								global_shops[shops[i].id] = shops[i];
 							}
@@ -939,7 +942,7 @@ function add_shop_save() {
 function add_unit_save() {
 	$("#add_unit_name_error_tr").hide();
 	
-	var unit_name = $("#add_unit_name").val();
+	const unit_name = $("#add_unit_name").val();
 	
 	if (unit_name == "") {
 		$("#add_unit_name_error_tr").show();
@@ -956,7 +959,7 @@ function add_unit_save() {
 		return;
 	}
 	
-	var data = {
+	const data = {
 		name: unit_name,
 		email: email,
 		csrf: CSRF_TOKEN
@@ -1014,7 +1017,7 @@ function add_unit_save() {
 function contact_send() {
 	$("#contact_subject_error_tr").hide();
 	$("#contact_message_error_tr").hide();
-	var subject = $("#contact_subject").val();
+	const subject = $("#contact_subject").val();
 	
 	if (subject == "") {
 		$("#contact_subject_error_tr").show();
@@ -1023,7 +1026,7 @@ function contact_send() {
 		return;
 	}
 
-	var message = $("#contact_message").val();
+	const message = $("#contact_message").val();
 	
 	if (message == "") {
 		$("#contact_message_error_tr").show();
@@ -1032,7 +1035,7 @@ function contact_send() {
 		return;
 	}
 	
-	var data = {
+	const data = {
 		subject: subject,
 		message: message,
 		email: email,
