@@ -227,7 +227,7 @@ function item_select_item(value, sort, dir, variant) {
 	}
 
 	App.ajax({
-		url: "api.php?url=/item&item_id=" + value + "&sort=" + sort + "&dir=" + dir + "&variant=" + variant,
+			url: `api.php?url=/item&item_id=${value}&sort=${sort}&dir=${dir}&variant=${variant}`,
 		dataType: "json",
 		success: function(data, textStatus, jqXHR ) {
 			if (!data.success) {
@@ -327,9 +327,9 @@ function item_save_modify_price() {
 	
 	const data = {
 		id: $('#modifyPriceModalID').val(),
-		url: url,
-		price: price,
-		email: email,
+		url,
+		price,
+		email,
 		csrf: CSRF_TOKEN
 	}
 	App.ajax({
@@ -385,7 +385,7 @@ function item_add_shop(item_id) {
 	}
 	
 	App.ajax({
-		url: "api.php?url=/item/variant&item_id=" + item_id,
+		url: `api.php?url=/item/variant&item_id=${item_id}`,
 		dataType: "json",
 		success: function(data, textStatus, jqXHR ) {
 			if (!data.success) {
@@ -483,12 +483,12 @@ function item_add_shop_save() {
 	price = parseFloat(price);
 	
 	const data = {
-		item: item,
-		variant: variant,
-		shop: shop,
-		url: url,
-		price: price,
-		email: email,
+		item,
+		variant,
+		shop,
+		url,
+		price,
+		email,
 		csrf: CSRF_TOKEN
 	};
 
@@ -605,10 +605,10 @@ function item_add_variant_save() {
 	}
 	
 	const data = {
-		variant: variant,
+		variant,
 		item: $('#itemAddVariantModalItemId').val(),
 		unit: total_unit,
-		email: email,
+		email,
 		csrf: CSRF_TOKEN
 	};
 
@@ -755,14 +755,14 @@ function add_item_save() {
 	price = parseFloat(price);
 	
 	const data = {
-		name: name,
-		variant: variant,
-		unit: unit,
-		total_unit: total_unit,
-		shop: shop,
-		url: url,
-		price: price,
-		email: email,
+		name,
+		variant,
+		unit,
+		total_unit,
+		shop,
+		url,
+		price,
+		email,
 		csrf: CSRF_TOKEN
 	}
 	App.ajax({
@@ -878,9 +878,9 @@ function add_shop_save() {
 	
 	const data = {
 		name: shop_name,
-		online: online,
-		url: url,
-		email: email,
+		online,
+		url,
+		email,
 		csrf: CSRF_TOKEN
 	}
 
@@ -961,7 +961,7 @@ function add_unit_save() {
 	
 	const data = {
 		name: unit_name,
-		email: email,
+		email,
 		csrf: CSRF_TOKEN
 	}
 
@@ -1036,10 +1036,10 @@ function contact_send() {
 	}
 	
 	const data = {
-		subject: subject,
-		message: message,
-		email: email,
-		user_name: user_name,
+		subject,
+		message,
+		email,
+		user_name,
 		csrf: CSRF_TOKEN
 	}
 
