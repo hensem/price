@@ -106,6 +106,47 @@ switch ($url_param) {
         echo json_encode(['success' => true, 'shops' => $shops], JSON_PRETTY_PRINT);
         break;
 
+    case '/initial_data':
+        if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+            header('Content-Type: application/json');
+            http_response_code(405);
+            echo json_encode(['success' => false, 'error' => 'Method not allowed']);
+            break;
+        }
+
+        checkAuth();
+
+        $conn = connect_db();
+
+        // Fetch items
+        $q_items = "select * from v_item_variant order by item_variant asc";
+        $result_items = $conn->query($q_items);
+        $items = [];
+        while ($row = $result_items->fetch(PDO::FETCH_ASSOC)) {
+            $items[] = $row;
+        }
+
+        // Fetch units
+        $q_units = "select * from unit order by name asc";
+        $result_units = $conn->query($q_units);
+        $units = [];
+        while ($row = $result_units->fetch(PDO::FETCH_ASSOC)) {
+            $units[] = $row;
+        }
+
+        // Fetch shops
+        $q_shops = "select * from shop order by name asc";
+        $result_shops = $conn->query($q_shops);
+        $shops = [];
+        while ($row = $result_shops->fetch(PDO::FETCH_ASSOC)) {
+            $shops[] = $row;
+        }
+
+        disconnect_db($conn);
+        header('Content-Type: application/json');
+        echo json_encode(['success' => true, 'items' => $items, 'units' => $units, 'shops' => $shops], JSON_PRETTY_PRINT);
+        break;
+
     case '/item':
         if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
             header('Content-Type: application/json');
