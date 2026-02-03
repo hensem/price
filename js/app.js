@@ -167,6 +167,10 @@ function loadInitialData() {
 				}
 
 				$('.selectpicker').selectpicker('refresh');
+
+				if (units.length > 0) {
+					$('#add_item_unit').selectpicker('val', units[0].id);
+				}
 			}
 		}
 	});
