@@ -345,6 +345,8 @@ switch ($url_param) {
             break;
         }
 
+        checkAuth();
+
         $item_id = $_GET['item_id'];
 
         if (!$item_id) {
