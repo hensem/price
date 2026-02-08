@@ -60,7 +60,7 @@ const renderItemRow = (item, index, sort, dir, variant) => {
     const now = new Date();
     const then = new Date(item.last_update);
 
-	const months = 3;
+	const months = 6;
     const monthsAgo = new Date(now);
     monthsAgo.setMonth(monthsAgo.getMonth() - months);
 
