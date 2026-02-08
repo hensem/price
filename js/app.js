@@ -11,24 +11,13 @@ const App = {
 	valid_url: /^(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i
 };
 
-// Legacy shortcuts pointing to App namespace
-let items = App.items;
-let units = App.units;
-let shops = App.shops;
-let global_shops = App.global_shops;
-let global_item_detail = App.global_item_detail;
-const tabs = App.tabs;
-const navs = App.navs;
-const letterNumber = App.letterNumber;
-const valid_url = App.valid_url;
-
 const isValidPrice = (val) => {
   const n = parseFloat(val);
   return !isNaN(n) && n > 0;
 };
 
 const isValidText = (val) => {
-  return letterNumber.test(val);
+  return App.letterNumber.test(val);
 };
 
 const renderTableHeader = (itemId, itemName, unit, sort, dir, variant) => {
@@ -139,37 +128,37 @@ function loadInitialData() {
 		success: (data) => {
 			if (data.success) {
 				// Populate items
-				items = data.items;
+				App.items = data.items;
 				const select = document.getElementById("select-item");
-				for (let i = 0; i < items.length; i++) {
-					const option = new Option(items[i].item_variant, items[i].id);
+				for (let i = 0; i < App.items.length; i++) {
+					const option = new Option(App.items[i].item_variant, App.items[i].id);
 					select.add(option);
 				}
 
 				// Populate units
-				units = data.units;
+				App.units = data.units;
 				const selectUnit = document.getElementById("add_item_unit");
-				for (let i = 0; i < units.length; i++) {
-					const option = new Option(units[i].name, units[i].id);
+				for (let i = 0; i < App.units.length; i++) {
+					const option = new Option(App.units[i].name, App.units[i].id);
 					selectUnit.add(option);
 				}
 
 				// Populate shops
-				shops = data.shops;
+				App.shops = data.shops;
 				const select1 = document.getElementById("itemAddShopModalShop");
 				const select2 = document.getElementById("add_item_shop");
-				for (let i = 0; i < shops.length; i++) {
-					const option1 = new Option(shops[i].name, shops[i].id);
+				for (let i = 0; i < App.shops.length; i++) {
+					const option1 = new Option(App.shops[i].name, App.shops[i].id);
 					select1.add(option1);
-					const option2 = new Option(shops[i].name, shops[i].id);
+					const option2 = new Option(App.shops[i].name, App.shops[i].id);
 					select2.add(option2);
-					global_shops[shops[i].id] = shops[i];
+					App.global_shops[App.shops[i].id] = App.shops[i];
 				}
 
 				$('.selectpicker').selectpicker('refresh');
 
-				if (units.length > 0) {
-					$('#add_item_unit').selectpicker('val', units[0].id);
+				if (App.units.length > 0) {
+					$('#add_item_unit').selectpicker('val', App.units[0].id);
 				}
 			}
 		}
@@ -177,15 +166,15 @@ function loadInitialData() {
 }
 
 function hide(tab) {
-	for (let j = 0; j < tabs.length; j++) {
-		if (tabs[j] != tab) {
-			$('#' + tabs[j]).hide();
-			$('#' + navs[j]).removeClass("nav-link active");
-			$('#' + navs[j]).addClass("nav-link");
+	for (let j = 0; j < App.tabs.length; j++) {
+		if (App.tabs[j] != tab) {
+			$('#' + App.tabs[j]).hide();
+			$('#' + App.navs[j]).removeClass("nav-link active");
+			$('#' + App.navs[j]).addClass("nav-link");
 		} else {
-			$('#' + tabs[j]).show();
-			$('#' + navs[j]).removeClass("nav-link");
-			$('#' + navs[j]).addClass("nav-link active");
+			$('#' + App.tabs[j]).show();
+			$('#' + App.navs[j]).removeClass("nav-link");
+			$('#' + App.navs[j]).addClass("nav-link active");
 		}
 	}
 	
@@ -233,7 +222,7 @@ function item_select_item(value, sort, dir, variant) {
 			if (!data.success) {
 				App.modal('Error', data.error);
 			} else {
-				global_item_detail = data.items;
+				App.global_item_detail = data.items;
 				const itemId = data.items[0].item_id;
 				const itemName = data.items[0].item;
 				const unit = data.items[0].unit;
@@ -256,15 +245,15 @@ function item_modify_price(i, sort, dir, variant) {
 	$('#modifyPriceModalPriceErrorTr').hide();
 	$('#modifyPriceModalURLErrorTr').hide();
 	
-	$('#modifyPriceModalItem').html(global_item_detail[0].item);
-	$('#modifyPriceModalVariant').html(global_item_detail[i].variant);
-	$('#modifyPriceModalShop').html(global_item_detail[i].shop);
-	$('#modifyPriceModalPrice').val(global_item_detail[i].price);
-	$('#modifyPriceModalURL').val(global_item_detail[i].url);
-	$('#modifyPriceModalID').val(global_item_detail[i].item_shop_id);
-	$('#modifyPriceModalURLRequired').val(global_item_detail[i].url_required);
+	$('#modifyPriceModalItem').html(App.global_item_detail[0].item);
+	$('#modifyPriceModalVariant').html(App.global_item_detail[i].variant);
+	$('#modifyPriceModalShop').html(App.global_item_detail[i].shop);
+	$('#modifyPriceModalPrice').val(App.global_item_detail[i].price);
+	$('#modifyPriceModalURL').val(App.global_item_detail[i].url);
+	$('#modifyPriceModalID').val(App.global_item_detail[i].item_shop_id);
+	$('#modifyPriceModalURLRequired').val(App.global_item_detail[i].url_required);
 	
-	if (global_item_detail[i].url_required == "0") {
+	if (App.global_item_detail[i].url_required == "0") {
 		$('#modifyPriceModalPriceNoteTr').hide();
 		$("#modifyPriceModalTitle").html("Modify Price");
 		$('#modifyPriceModalURLtr').hide();
@@ -312,7 +301,7 @@ function item_save_modify_price() {
 			$("#modifyPriceModalURL").focus();
 			return;
 		}
-		if (valid_url.test(url)) {
+		if (App.valid_url.test(url)) {
 			// do nothing
 		} else {
 			$("#modifyPriceModalURLErrorTr").show();
@@ -377,8 +366,8 @@ function item_add_shop(item_id) {
 	
 	let items_index;
 	
-	for (let j = 0; j < items.length; j++) {
-		if (items[j].id == item_id) {
+	for (let j = 0; j < App.items.length; j++) {
+		if (App.items[j].id == item_id) {
 			items_index = j;
 			break;
 		}
@@ -400,8 +389,8 @@ function item_add_shop(item_id) {
 					backdrop: 'static',
 					keyboard: false
 				});
-				$('#itemAddShopModalItem').html(items[items_index].name);
-				$('#itemAddShopModalItemId').val(items[items_index].id);
+				$('#itemAddShopModalItem').html(App.items[items_index].name);
+				$('#itemAddShopModalItemId').val(App.items[items_index].id);
 				const select = document.getElementById("itemAddShopModalVariant");
 				for (let m = 0; m < data.variant.length; m++) {
 					const option = new Option(data.variant[m].name, data.variant[m].id);
@@ -418,7 +407,7 @@ function item_add_shop_change_shop() {
 	const shop = $("#itemAddShopModalShop").val();
 	if (shop == "0") return;
 
-	const shopObj = global_shops[shop];
+	const shopObj = App.global_shops[shop];
 	if (!shopObj) return;
 
 	if (shopObj.url == "1") {
@@ -454,13 +443,13 @@ function item_add_shop_save() {
 		return;
 	}
 	
-	const shopObj = global_shops[shop];
+	const shopObj = App.global_shops[shop];
 	if (!shopObj) return;
 
 	let url = "";
 	if (shopObj.url == "1") {
 		url = $("#itemAddShopModalURL").val();
-		if (!valid_url.test(url)) {
+		if (!App.valid_url.test(url)) {
 			$("#itemAddShopModalURLErrorTr").show();
 			$("#itemAddShopModalURLError").html("Invalid URL.");
 			$("#itemAddShopModalURL").focus();
@@ -536,8 +525,8 @@ function item_add_variant(item_id) {
 	
 	let items_index;
 	
-	for (let j = 0; j < items.length; j++) {
-		if (items[j].id == item_id) {
+	for (let j = 0; j < App.items.length; j++) {
+		if (App.items[j].id == item_id) {
 			items_index = j;
 			break;
 		}
@@ -545,16 +534,16 @@ function item_add_variant(item_id) {
 	
 	let units_index;
 	
-	for (let j = 0; j < units.length; j++) {
-		if (units[j].id == items[items_index].unit) {
+	for (let j = 0; j < App.units.length; j++) {
+		if (App.units[j].id == App.items[items_index].unit) {
 			units_index = j;
 			break;
 		}
 	}
 
-	$('#itemAddVariantModalItem').html(items[items_index].name);
-	$('#itemAddVariantModalItemId').val(items[items_index].id);
-	$('#itemAddVariantModalUnit').html(units[units_index].name);
+	$('#itemAddVariantModalItem').html(App.items[items_index].name);
+	$('#itemAddVariantModalItemId').val(App.items[items_index].id);
+	$('#itemAddVariantModalUnit').html(App.units[units_index].name);
 	
 	$('#itemAddVariantModal').modal({
 		backdrop: 'static',
@@ -644,7 +633,7 @@ function add_item_select_shop(that) {
 	
 	if (that.value == 0) return;
 	
-	if (global_shops[that.value].url == "1") {
+	if (App.global_shops[that.value].url == "1") {
 		$('#add_item_url_tr').show();
 		$('#add_item_price_note_tr').show();
 	} else {
@@ -720,7 +709,7 @@ function add_item_save() {
 	}
 	
 	let url;
-	if (global_shops[shop].url == "1") {
+	if (App.global_shops[shop].url == "1") {
 		url = $("#add_item_url").val();
 		if (url == "") {
 			$("#add_item_url_error_tr").show();
@@ -729,7 +718,7 @@ function add_item_save() {
 			return;
 		}
 		
-		if (valid_url.test(url)) {
+		if (App.valid_url.test(url)) {
 			// do nothing
 		} else {
 			$("#add_item_url_error_tr").show();
@@ -797,7 +786,7 @@ function add_item_save() {
 				$("#add_item_price").val("");
 
 				// Clear existing data before refreshing items
-				items = [];
+				App.items = [];
 
 				// Refresh items data
 				App.ajax({
@@ -805,11 +794,11 @@ function add_item_save() {
 					dataType: "json",
 					success: function(data) {
 						if (data.success) {
-							items = data.items;
+							App.items = data.items;
 							const select = document.getElementById("select-item");
 							select.innerHTML = '<option value="0">Select item....</option>';
-							for (let i = 0; i < items.length; i++) {
-								const option = new Option(items[i].item_variant, items[i].id);
+							for (let i = 0; i < App.items.length; i++) {
+								const option = new Option(App.items[i].item_variant, App.items[i].id);
 								select.add(option);
 							}
 							$('.selectpicker').selectpicker('refresh');
@@ -863,7 +852,7 @@ function add_shop_save() {
 			return;
 		}
 		
-		if (valid_url.test(url)) {
+		if (App.valid_url.test(url)) {
 			// do nothing
 		} else {
 			$("#add_shop_url_error_tr").show();
@@ -909,8 +898,8 @@ function add_shop_save() {
 				hide("add_shop_tab");
 
 				// Clear existing data before refreshing shops
-				shops = [];
-				global_shops = [];
+				App.shops = [];
+				App.global_shops = {};
 
 				// Refresh shops data
 				App.ajax({
@@ -918,17 +907,17 @@ function add_shop_save() {
 					dataType: "json",
 					success: function(data) {
 						if (data.success) {
-							shops = data.shops;
+							App.shops = data.shops;
 							const select1 = document.getElementById("itemAddShopModalShop");
 							const select2 = document.getElementById("add_item_shop");
 							select1.innerHTML = '<option value="0">Select shop....</option>';
 							select2.innerHTML = '<option value="0">Select shop....</option>';
-							for (let i = 0; i < shops.length; i++) {
-								const option1 = new Option(shops[i].name, shops[i].id);
+							for (let i = 0; i < App.shops.length; i++) {
+								const option1 = new Option(App.shops[i].name, App.shops[i].id);
 								select1.add(option1);
-								const option2 = new Option(shops[i].name, shops[i].id);
+								const option2 = new Option(App.shops[i].name, App.shops[i].id);
 								select2.add(option2);
-								global_shops[shops[i].id] = shops[i];
+								App.global_shops[App.shops[i].id] = App.shops[i];
 							}
 							$('.selectpicker').selectpicker('refresh');
 						}
@@ -990,7 +979,7 @@ function add_unit_save() {
 				hide("add_unit_tab");
 
 				// Clear existing data before refreshing units
-				units = [];
+				App.units = [];
 
 				// Refresh units data
 				App.ajax({
@@ -998,11 +987,11 @@ function add_unit_save() {
 					dataType: "json",
 					success: function(data) {
 						if (data.success) {
-							units = data.units;
-							var select = document.getElementById("add_item_unit");
+							App.units = data.units;
+							const select = document.getElementById("add_item_unit");
 							select.innerHTML = '';
-							for (var i = 0; i < units.length; i++) {
-								var option = new Option(units[i].name, units[i].id);
+							for (let i = 0; i < App.units.length; i++) {
+								const option = new Option(App.units[i].name, App.units[i].id);
 								select.add(option);
 							}
 							$('.selectpicker').selectpicker('refresh');
