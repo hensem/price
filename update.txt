@@ -1,0 +1,12 @@
+item old id			2
+item new name		Dumex Dugro
+item new id			157
+variant old	name	Dumex Dugro 5 Fruit & Veg 850g
+variant new	name	5 Fruit & Veg 850g
+variant	id			195
+variant
+	item old id -> item new id
+item_shop:
+	item = item old id
+	variant id
+	item old id -> item new id

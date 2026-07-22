@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(New-Item -ItemType Directory -Force \"C:\\\\Abyss Web Server\\\\htdocs\\\\lisa\\\\images\")",
+      "PowerShell(Move-Item \"C:\\\\Abyss Web Server\\\\htdocs\\\\lisa\\\\haikal3.png\" \"C:\\\\Abyss Web Server\\\\htdocs\\\\lisa\\\\images\\\\haikal3.png\")",
+      "Read(//c/Abyss Web Server/htdocs/lisa/**)"
+    ],
+    "additionalDirectories": [
+      "C:\\Abyss Web Server\\htdocs\\lisa"
+    ]
+  }
+}

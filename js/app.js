@@ -39,6 +39,7 @@ const renderTableHeader = (itemId, itemName, unit, sort, dir, variant) => {
                     <a href='javascript:void(0)' data-item-id='${itemId}' data-sort='price_per_unit' data-dir='${priceDir}' data-variant='${variant}' class='sort-link'>Price per ${unit}</a>
                 </th>
                 <th>Date</th>
+                <th>Note</th>
                 <th></th>
             </tr>
     `;
@@ -49,7 +50,7 @@ const renderItemRow = (item, index, sort, dir, variant) => {
     const now = new Date();
     const then = new Date(item.last_update);
 
-	const months = 6;
+	const months = STALE_MONTHS;
     const monthsAgo = new Date(now);
     monthsAgo.setMonth(monthsAgo.getMonth() - months);
 
@@ -79,6 +80,7 @@ const renderItemRow = (item, index, sort, dir, variant) => {
             <td>${price}</td>
             <td>${pricePerUnit}</td>
             <td>${lastUpdate}</td>
+            <td>${item.note ?? ''}</td>
             <td>
                 <input type="button" value="Modify" data-index="${index}" data-sort="${sort}" data-dir="${dir}" data-variant="${variant}" class="modify-price-btn" />
             </td>
@@ -249,6 +251,7 @@ function item_modify_price(i, sort, dir, variant) {
 	$('#modifyPriceModalVariant').html(App.global_item_detail[i].variant);
 	$('#modifyPriceModalShop').html(App.global_item_detail[i].shop);
 	$('#modifyPriceModalPrice').val(App.global_item_detail[i].price);
+	$('#modifyPriceModalNote').val(App.global_item_detail[i].note ?? '');
 	$('#modifyPriceModalURL').val(App.global_item_detail[i].url);
 	$('#modifyPriceModalID').val(App.global_item_detail[i].item_shop_id);
 	$('#modifyPriceModalURLRequired').val(App.global_item_detail[i].url_required);
@@ -318,6 +321,7 @@ function item_save_modify_price() {
 		id: $('#modifyPriceModalID').val(),
 		url,
 		price,
+		note: $('#modifyPriceModalNote').val(),
 		email,
 		csrf: CSRF_TOKEN
 	}
@@ -363,6 +367,7 @@ function item_add_shop(item_id) {
 	$('#itemAddShopModalShop').val("0");
 	$('#itemAddShopModalURL').val("");	
 	$('#itemAddShopModalPrice').val("");
+	$('#itemAddShopModalNote').val("");
 	
 	let items_index;
 	
@@ -477,6 +482,7 @@ function item_add_shop_save() {
 		shop,
 		url,
 		price,
+		note: $('#itemAddShopModalNote').val(),
 		email,
 		csrf: CSRF_TOKEN
 	};
@@ -751,6 +757,7 @@ function add_item_save() {
 		shop,
 		url,
 		price,
+		note: $("#add_item_note").val(),
 		email,
 		csrf: CSRF_TOKEN
 	}
@@ -784,6 +791,7 @@ function add_item_save() {
 				$("#add_item_shop").val("0").trigger('change');
 				$("#add_item_url").val("");
 				$("#add_item_price").val("");
+				$("#add_item_note").val("");
 
 				// Clear existing data before refreshing items
 				App.items = [];

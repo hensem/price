@@ -108,6 +108,9 @@
 					<td><input type="number" pattern="[0-9]*" id="add_item_price"></td>
 				</tr><tr id="add_item_price_note_tr">
 					<td colspan="2">Price must include shipping</td>
+				</tr><tr>
+					<th>Note</th>
+					<td><input type="text" id="add_item_note"></td>
 				</tr><tr id="add_item_price_error_tr">
 					<td colspan="2"><div class="alert alert-danger" role="alert" id="add_item_price_error"></div></td>
 				</tr><tr>
@@ -239,6 +242,9 @@
 								</tr><tr>
 									<th>Price</th>
 									<td><input type="number" id="modifyPriceModalPrice" /></td>
+								</tr><tr>
+									<th>Note</th>
+									<td><input type="text" id="modifyPriceModalNote" /></td>
 								</tr><tr id="modifyPriceModalPriceNoteTr">
 									<td colspan="2">Price must include shipping</td>
 								</tr><tr id="modifyPriceModalPriceErrorTr">
@@ -314,6 +320,9 @@
 									<td><input type="number" id="itemAddShopModalPrice" /></td>
 								</tr><tr id="itemAddShopModalPriceNoteTr">
 									<td colspan="2">Price must include shipping</td>
+								</tr><tr>
+									<th>Note</th>
+									<td><input type="text" id="itemAddShopModalNote" /></td>
 								</tr><tr id="itemAddShopModalPriceErrorTr">
 									<td colspan="2">
 										<div class="alert alert-danger" role="alert" id="itemAddShopModalPriceError"></div>
@@ -384,6 +393,7 @@
 		var email = "<?= htmlspecialchars($template_vars['user_email'], ENT_QUOTES) ?>";
 		var user_name = "<?= htmlspecialchars($template_vars['user_name'], ENT_QUOTES) ?>";
 		var CSRF_TOKEN = "<?= htmlspecialchars($template_vars['csrf_token'], ENT_QUOTES) ?>";
+		var STALE_MONTHS = <?= PRICE_STALE_MONTHS ?>;
 
 		$(document).ready(function() {
 			loadInitialData();
@@ -438,7 +448,7 @@
 			});
 		});
 		</script>
-		<script src="js/app.js"></script>
+		<script src="js/app.js?v=<?= filemtime(__DIR__ . '/js/app.js') ?>"></script>
 	<?php endif; ?>
 	</div>
 	

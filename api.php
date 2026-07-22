@@ -185,7 +185,7 @@ switch ($url_param) {
             $conn = connect_db();
 
             // Build the query with proper ORDER BY syntax
-            $q = "select * from v_item_shop where item_id = ? order by (last_update < datetime('now', '-6 months')), `{$sort}` {$dir}";
+            $q = "select * from v_item_shop where item_id = ? order by (last_update < datetime('now', '-" . PRICE_STALE_MONTHS . " months')), `{$sort}` {$dir}";
             $stmt = $conn->prepare($q);
             if (!$stmt) {
                 header('Content-Type: application/json');
@@ -225,6 +225,7 @@ switch ($url_param) {
         $id = $data['id'];
         $url = $data['url'];
         $price = $data['price'];
+        $note = $data['note'] ?? null;
         if (isset($data['email'])) {
             $email = $data['email'];
         } else {
@@ -318,9 +319,9 @@ switch ($url_param) {
 
             // Update item_shop
             $modify_update_timestamp = date("Y-m-d H:i:s");
-            $q = "update `item_shop` set `price` = ?, `url` = ?, last_update = ? where `id` = ?";
+            $q = "update `item_shop` set `price` = ?, `url` = ?, `note` = ?, last_update = ? where `id` = ?";
             $stmt = $conn->prepare($q);
-            $stmt->execute([$price, $url, $modify_update_timestamp, $id]);
+            $stmt->execute([$price, $url, $note, $modify_update_timestamp, $id]);
 
             $body = "item_shop id: " . $id . "<br /><br />";
             $body .= "User: " . $email . "<br /><br />";
@@ -394,6 +395,7 @@ switch ($url_param) {
         $shop = $data['shop'];
         $url = trim($data['url']);
         $price = $data['price'];
+        $note = $data['note'] ?? null;
         if (isset($data['email'])) {
             $email = $data['email'];
         } else {
@@ -450,9 +452,9 @@ switch ($url_param) {
         } else {
             // Insert
             $add_timestamp = date("Y-m-d H:i:s");
-            $q = "insert into `item_shop` (`item`, `variant`, `shop`, `url`, `price`, `last_update`, `updated_by`) values (?, ?, ?, ?, ?, ?, ?)";
+            $q = "insert into `item_shop` (`item`, `variant`, `shop`, `url`, `price`, `note`, `last_update`, `updated_by`) values (?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $conn->prepare($q);
-            $stmt->execute([$item, $variant, $shop, $url, $price, $add_timestamp, $email]);
+            $stmt->execute([$item, $variant, $shop, $url, $price, $note, $add_timestamp, $email]);
 
             $item_shop_id = $conn->lastInsertId();
 
@@ -570,6 +572,7 @@ switch ($url_param) {
         $shop = $data['shop'];
         $url = trim($data['url']);
         $price = $data['price'];
+        $note = $data['note'] ?? null;
         if (isset($data['email'])) {
             $email = $data['email'];
         } else {
@@ -639,9 +642,9 @@ switch ($url_param) {
             $variant_id = $conn->lastInsertId();
 
             // Insert item_shop
-            $q = "insert into `item_shop` (`item`, `variant`, `shop`, `url`, `price`, `last_update`, `updated_by`) values (?, ?, ?, ?, ?, ?, ?)";
+            $q = "insert into `item_shop` (`item`, `variant`, `shop`, `url`, `price`, `note`, `last_update`, `updated_by`) values (?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $conn->prepare($q);
-            $stmt->execute([$item_id, $variant_id, $shop, $url, $price, $item_timestamp, $email]);
+            $stmt->execute([$item_id, $variant_id, $shop, $url, $price, $note, $item_timestamp, $email]);
             $item_shop_id = $conn->lastInsertId();
 
             $body = "item id: " . $item_id . "<br /><br />";
