@@ -188,7 +188,8 @@
 			</table>
 		</div>
 		
-		<div class="sk-fading-circle" style="display: none;" id="spinner">
+		<div id="spinner-overlay">
+		<div class="sk-fading-circle" id="spinner">
 		  <div class="sk-circle1 sk-circle"></div>
 		  <div class="sk-circle2 sk-circle"></div>
 		  <div class="sk-circle3 sk-circle"></div>
@@ -201,6 +202,7 @@
 		  <div class="sk-circle10 sk-circle"></div>
 		  <div class="sk-circle11 sk-circle"></div>
 		  <div class="sk-circle12 sk-circle"></div>
+		</div>
 		</div>
 		
 		<div class="modal" tabindex="-1" id="alertModal">

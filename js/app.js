@@ -100,14 +100,14 @@ const renderTableFooter = (itemId) => {
 }
 
 App.ajax = (options) => {
-    $("#spinner").show();
+    $("#spinner-overlay").css('display', 'flex');
 
     return $.ajax(options)
         .fail(function (jqXHR, textStatus, errorThrown) {
             App.showError(textStatus + ": " + errorThrown);
         })
         .always(function () {
-            $("#spinner").hide();
+            $("#spinner-overlay").hide();
         });
 };
 
