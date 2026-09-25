@@ -1,6 +1,6 @@
 <?php
 require_once '../../config/config_price.php';
-require_once 'vendor/autoload.php';
+require_once __DIR__ . '/../../library/vendor/autoload.php';
 
 use flight\Engine;
 
